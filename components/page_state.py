@@ -51,12 +51,7 @@ def set_initial_state():
 
     if "messages" not in st.session_state:
         st.session_state["messages"] = [
-            {
-                "role": "assistant",
-                "content": "欢迎使用智能检索"
-                           "首先，请导入一些文件或提取存储库。"
-                           "完成这些步骤后，我们可以继续对话并探讨我可以如何进一步为您提供帮助。",
-            }
+
         ]
 
     ################################
