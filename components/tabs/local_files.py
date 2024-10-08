@@ -35,19 +35,19 @@ def local_files():
     # Force users to confirm Settings before uploading files
     if st.session_state["selected_model"] is not None:
         uploaded_files = st.file_uploader(
-            "选择文件22",
+            "选择文件",
             accept_multiple_files=True,
             type=supported_files_new,
         )
     else:
         # st.warning("Please configure Ollama settings before proceeding!", icon="⚠️")
-        st.warning("请先配置 Ollama 设置然后再继续！", icon="⚠️")
+        st.warning("请先配置Ollama设置然后再继续！", icon="⚠️")
         file_upload_container = st.container(border=True)
         with file_upload_container:
             uploaded_files = st.file_uploader(
-                "选择文件33",
+                "选择文件",
                 accept_multiple_files=True,
-                type=supported_files,
+                type=supported_files_new,
                 disabled=True,
             )
 

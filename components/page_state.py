@@ -4,6 +4,9 @@ import utils.logs as logs
 
 from utils.ollama import get_models
 
+gx_ollama = 'http://125.69.16.175:11434'
+zj_ollama = "http://localhost:11434"
+
 
 def set_initial_state():
 
@@ -15,7 +18,7 @@ def set_initial_state():
         st.session_state["sidebar_state"] = "expanded"
 
     if "ollama_endpoint" not in st.session_state:
-        st.session_state["ollama_endpoint"] = "http://localhost:11434"
+        st.session_state["ollama_endpoint"] = gx_ollama
 
     if "embedding_model" not in st.session_state:
         st.session_state["embedding_model"] = "Default (bge-large-en-v1.5)"
@@ -50,7 +53,9 @@ def set_initial_state():
         st.session_state["messages"] = [
             {
                 "role": "assistant",
-                "content": "Welcome to Local RAG! To begin, please either import some files or ingest a GitHub repo. Once you've completed those steps, we can continue the conversation and explore how I can assist you further.",
+                "content": "欢迎使用智能检索"
+                           "首先，请导入一些文件或提取存储库。"
+                           "完成这些步骤后，我们可以继续对话并探讨我可以如何进一步为您提供帮助。",
             }
         ]
 
