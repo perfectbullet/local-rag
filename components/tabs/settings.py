@@ -8,8 +8,8 @@ from datetime import datetime
 
 
 def settings():
-    st.header("Settings")
-    st.caption("Configure Local RAG settings and integrations")
+    st.header("设置")
+    st.caption("配置本地 RAG 设置和集成")
 
     st.subheader("Chat")
     chat_settings = st.container(border=True)

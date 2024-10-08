@@ -91,9 +91,11 @@ def set_initial_state():
         st.session_state["advanced"] = False
 
     if "system_prompt" not in st.session_state:
-        st.session_state["system_prompt"] = (
-            "You are a sophisticated virtual assistant designed to assist users in comprehensively understanding and extracting insights from a wide range of documents at their disposal. Your expertise lies in tackling complex inquiries and providing insightful analyses based on the information contained within these documents."
-        )
+        sys_prompt = """您是一个复杂的虚拟助手，旨在帮助用户全面理解和提取他们可以使用的各种文档的见解。您的专长在于处理复杂的查询并根据这些文件中包含的信息提供有洞察力的分析。"""
+        st.session_state['system_prompt'] = sys_prompt
+        # st.session_state["system_prompt"] = (
+        #     "You are a sophisticated virtual assistant designed to assist users in comprehensively understanding and extracting insights from a wide range of documents at their disposal. Your expertise lies in tackling complex inquiries and providing insightful analyses based on the information contained within these documents."
+        # )
 
     if "top_k" not in st.session_state:
         st.session_state["top_k"] = 3
