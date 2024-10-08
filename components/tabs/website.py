@@ -16,10 +16,10 @@ def ensure_https(url):
 
 
 def website():
-    st.write("Enter a Website")
+    st.write("输入网站")
     col1, col2 = st.columns([1, 0.2])
     with col1:
-        new_website = st.text_input("Enter a Website", label_visibility="collapsed")
+        new_website = st.text_input("输入网站", label_visibility="collapsed")
     with col2:
         add_button = st.button("➕")
 

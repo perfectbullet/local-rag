@@ -9,16 +9,24 @@ import utils.llama_index as llama_index
 import utils.logs as logs
 import utils.rag_pipeline as rag
 
-supported_files = (
+# supported_files = (
+#     "csv",
+#     "docx",
+#     "epub",
+#     "ipynb",
+#     "json",
+#     "md",
+#     "pdf",
+#     "ppt",
+#     "pptx",
+#     "txt",
+# )
+
+supported_files_new = (
     "csv",
     "docx",
-    "epub",
-    "ipynb",
-    "json",
     "md",
     "pdf",
-    "ppt",
-    "pptx",
     "txt",
 )
 
@@ -27,9 +35,9 @@ def local_files():
     # Force users to confirm Settings before uploading files
     if st.session_state["selected_model"] is not None:
         uploaded_files = st.file_uploader(
-            "选择文件",
+            "选择文件22",
             accept_multiple_files=True,
-            type=supported_files,
+            type=supported_files_new,
         )
     else:
         # st.warning("Please configure Ollama settings before proceeding!", icon="⚠️")
@@ -37,7 +45,7 @@ def local_files():
         file_upload_container = st.container(border=True)
         with file_upload_container:
             uploaded_files = st.file_uploader(
-                "选择文件",
+                "选择文件33",
                 accept_multiple_files=True,
                 type=supported_files,
                 disabled=True,

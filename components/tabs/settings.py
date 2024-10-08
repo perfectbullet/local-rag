@@ -105,9 +105,9 @@ def settings():
     st.subheader("导出数据")
     export_data_settings = st.container(border=True)
     with export_data_settings:
-        st.write("Chat History")
+        st.write("搜索历史")
         st.download_button(
-            label="Download",
+            label="下载",
             data=json.dumps(st.session_state["messages"]),
             file_name=f"local-rag-chat-{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.json",
             mime="application/json",
