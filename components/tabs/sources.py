@@ -6,15 +6,15 @@ from components.tabs.website import website
 
 
 def sources():
-    st.title("Directly import your data")
-    st.caption("Convert your data into embeddings for utilization during chat")
+    st.title("直接导入您的数据")
+    st.caption("将您的数据转换为嵌入以便在聊天期间使用")
     st.write("")
 
-    with st.expander("💻 &nbsp; **Local Files**", expanded=False):
+    with st.expander("💻 &nbsp; **本地文件**", expanded=False):
         local_files()
 
-    with st.expander("🗂️ &nbsp;**GitHub Repo**", expanded=False):
+    with st.expander("🗂️ &nbsp;**仓库数据**", expanded=False):
         github_repo()
 
-    with st.expander("🌐 &nbsp; **Website**", expanded=False):
+    with st.expander("🌐 &nbsp; **网页数据**", expanded=False):
         website()

@@ -11,24 +11,26 @@ def settings():
     st.header("设置")
     st.caption("配置本地 RAG 设置和集成")
 
-    st.subheader("Chat")
+    # st.subheader("Chat")
+    st.subheader("智能检索")
     chat_settings = st.container(border=True)
     with chat_settings:
         st.text_input(
-            "Ollama Endpoint",
+            "Ollama端点",
             key="ollama_endpoint",
             placeholder="http://localhost:11434",
             on_change=ollama.get_models,
         )
         st.selectbox(
-            "Model",
+            # "Model",
+            "模型",
             st.session_state["ollama_models"],
             key="selected_model",
-            disabled= len(st.session_state["ollama_models"])==0,
-            placeholder= "Select Model" if len(st.session_state["ollama_models"])>0 else "No Models Available",
+            disabled=len(st.session_state["ollama_models"]) == 0,
+            placeholder="Select Model" if len(st.session_state["ollama_models"]) > 0 else "No Models Available",
         )
         st.button(
-            "Refresh",
+            "刷新",
             on_click=ollama.get_models,
         )
         if st.session_state["advanced"] == True:
@@ -61,13 +63,13 @@ def settings():
             st.write("")
 
     st.subheader(
-        "Embeddings",
-        help="Embeddings are numerical representations of data, useful for tasks like document clustering and similarity detection when processing files, as they encode semantic meaning for efficient manipulation and retrieval.",
+        "嵌入(Embeddings)",
+        help="嵌入是数据的数值表示，对于处理文件时的文档聚类和相似性检测等任务很有用，因为它们对语义含义进行编码以实现有效的操作和检索。",
     )
     embedding_settings = st.container(border=True)
     with embedding_settings:
         embedding_model = st.selectbox(
-            "Model",
+            "嵌入模型",
             [
                 "Default (bge-large-en-v1.5)",
                 "Large (Salesforce/SFR-Embedding-Mistral)",
@@ -100,7 +102,7 @@ def settings():
                 value=st.session_state["chunk_overlap"],
             )
 
-    st.subheader("Export Data")
+    st.subheader("导出数据")
     export_data_settings = st.container(border=True)
     with export_data_settings:
         st.write("Chat History")
@@ -111,7 +113,7 @@ def settings():
             mime="application/json",
         )
 
-    st.toggle("Advanced Settings", key="advanced")
+    st.toggle("高级设置", key="advanced")
 
     if st.session_state["advanced"] == True:
         with st.expander("Current Application State"):

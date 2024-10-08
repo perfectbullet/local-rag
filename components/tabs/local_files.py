@@ -27,16 +27,17 @@ def local_files():
     # Force users to confirm Settings before uploading files
     if st.session_state["selected_model"] is not None:
         uploaded_files = st.file_uploader(
-            "Select Files",
+            "选择文件",
             accept_multiple_files=True,
             type=supported_files,
         )
     else:
-        st.warning("Please configure Ollama settings before proceeding!", icon="⚠️")
+        # st.warning("Please configure Ollama settings before proceeding!", icon="⚠️")
+        st.warning("请先配置 Ollama 设置然后再继续！", icon="⚠️")
         file_upload_container = st.container(border=True)
         with file_upload_container:
             uploaded_files = st.file_uploader(
-                "Select Files",
+                "选择文件",
                 accept_multiple_files=True,
                 type=supported_files,
                 disabled=True,
@@ -45,7 +46,7 @@ def local_files():
     if len(uploaded_files) > 0:
         st.session_state["file_list"] = uploaded_files
 
-        with st.spinner("Processing..."):
+        with st.spinner("处理中..."):
             # Initiate the RAG pipeline, providing documents to be saved on disk if necessary
             error = rag.rag_pipeline(uploaded_files)
 
@@ -53,4 +54,4 @@ def local_files():
             if error is not None:
                 st.exception(error)
             else:
-                st.write("Your files are ready. Let's chat! 😎") # TODO: This should be a button.
+                st.write("您的文件已准备好") # TODO: This should be a button.

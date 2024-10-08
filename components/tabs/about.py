@@ -4,8 +4,8 @@ from datetime import datetime
 
 
 def about():
-    st.title("📚 Local RAG")
-    st.caption(f"Developed by Jon Fairbanks &copy; {datetime.now().year}")
+    st.title("📚 本地 RAG")
+    st.caption(f"GX软件部ZJ开发 &copy; {datetime.now().year}")
     st.write("")
 
     links_html = """
@@ -23,12 +23,12 @@ def about():
     <ul style="list-style-type:none; padding-left:0;">
         <li>
             <a href="https://blogs.nvidia.com/blog/what-is-retrieval-augmented-generation/" style="color: grey;">
-                What is RAG?
+                什么是 RAG？
             </a>
         </li>
         <li>
             <a href="https://aws.amazon.com/what-is/embeddings-in-machine-learning/" style="color: grey;">
-                What are embeddings?
+                什么是嵌入？
             </a>
         </li>
     </ul>
@@ -38,22 +38,22 @@ def about():
     <ul style="list-style-type:none; padding-left:0;">
         <li>
             <a href="https://github.com/jonfairbanks/local-rag/issues" style="color: grey;">
-                Bug Reports
+                Bug报告
             </a>
         </li>
         <li>
             <a href="https://github.com/jonfairbanks/local-rag/discussions/new?category=ideas" style="color: grey;">
-                Feature Requests
+                建议
             </a>
         </li>
     </ul>
     """
 
-    st.subheader("Links")
+    st.subheader("链接")
     st.markdown(links_html, unsafe_allow_html=True)
 
-    st.subheader("Resources")
+    st.subheader("资源")
     st.markdown(resources_html, unsafe_allow_html=True)
 
-    st.subheader("Help")
+    st.subheader("帮助")
     st.markdown(help_html, unsafe_allow_html=True)

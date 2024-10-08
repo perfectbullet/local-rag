@@ -41,4 +41,22 @@ def setup_logger(
     return logger
 
 
-log = setup_logger()
+from loguru import logger
+
+def setup_logger_new(
+    log_file: str = "local-rag.log", level: Union[int, str] = logging.INFO
+):
+    logger.add(
+        sink=log_file,
+        enqueue=True,
+        rotation="4 weeks",
+        retention="4 months",
+        encoding="utf-8",
+        backtrace=True,
+        diagnose=True,
+        compression="zip",
+    )
+    return logger
+
+
+log = setup_logger_new()
