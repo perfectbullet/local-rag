@@ -91,6 +91,8 @@ def rag_pipeline(uploaded_files: list = None):
     if embedding_model == "Other":
         hf_embedding_model = st.session_state["other_embedding_model"]
 
+    # 测试写死的嵌入模型
+    hf_embedding_model = './embedding_models/bge-large-en-v1.5'
     try:
         llama_index.setup_embedding_model(
             hf_embedding_model,
