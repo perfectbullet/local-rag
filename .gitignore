@@ -4,3 +4,4 @@ data/*
 .cache/*
 .nv/*
 .DS_Store
+.ipynb_checkpoints/

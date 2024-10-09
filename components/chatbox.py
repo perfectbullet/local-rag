@@ -1,18 +1,28 @@
 import streamlit as st
-
+import numpy as np
 from utils.ollama import chat, context_chat
+from components.tabs.about import about
+from components.tabs.sources import sources
+from components.tabs.settings import settings
 
 
 def chatbox():
     # 设定3列
     col1, col2 = st.columns([3, 1])
     # 设定不同的列标题和展示的内容
+    # with col0:
+    #     # 设置容器
+    #     with st.container():
+    #         st.write("This is inside the container")
+    #         st.bar_chart(np.random.randn(50, 3))
+    #         tab1, tab2, tab3 = st.sidebar.tabs(["数据源", "设置", "关于"])
+    #         with tab1:
+    #             sources()
+    #         with tab2:
+    #             settings()
+    #         with tab3:
+    #             about()
     with col1:
-        # st.header("医疗器械检索增强")
-        # st.caption(
-        #     "使用大型语言模型(LLM)提取数据以进行检索增强生成(RAG)，所有这些都不需要第三方网络，避免敏感信息离开您的网络。"
-        # )
-        # st.header("请输入你要搜索的关键词")
 
         for msg in st.session_state["messages"]:
             print('msg is {}'.format(msg))
@@ -48,8 +58,5 @@ def chatbox():
         st.header("帮助中心")
         # st.image("https://static.streamlit.io/examples/dog.jpg")
         # st.html()
-
         st.image("./static/images/help_04.png")
         st.image("./static/images/help_05.png")
-
-

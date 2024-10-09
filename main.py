@@ -24,7 +24,7 @@ set_page_config()
 # set_page_header()
 
 ### Sidebar
-sidebar()
+# sidebar()
 
 ### Chat Box
 chatbox()
