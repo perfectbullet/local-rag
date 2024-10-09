@@ -2,7 +2,7 @@ import json
 
 import streamlit as st
 
-import utils.ollama as ollama
+import utils.util_ollama as ollama
 
 from datetime import datetime
 

@@ -2,7 +2,7 @@ import streamlit as st
 
 import utils.logs as logs
 
-from utils.ollama import get_models
+from utils.util_ollama import get_models
 
 gx_ollama = 'http://125.69.16.175:11434'
 zj_ollama = "http://localhost:11434"

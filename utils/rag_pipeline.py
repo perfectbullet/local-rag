@@ -6,7 +6,7 @@ import inspect
 import streamlit as st
 
 import utils.helpers as func
-import utils.ollama as ollama
+import utils.util_ollama as ollama
 import utils.llama_index as llama_index
 import utils.logs as logs
 

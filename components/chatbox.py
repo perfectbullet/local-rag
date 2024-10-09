@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-from utils.ollama import chat, context_chat
+from utils.util_ollama import chat, context_chat
 from components.tabs.about import about
 from components.tabs.sources import sources
 from components.tabs.settings import settings
