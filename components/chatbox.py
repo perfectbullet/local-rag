@@ -15,6 +15,7 @@ bot_template = """
 
 def chatbox():
     # 设定2列
+    st.image("./static/images/head_02.png")
     col1, col2 = st.columns([4, 1])
     # 设定不同的列标题和展示的内容
     with col1:
@@ -55,13 +56,14 @@ def chatbox():
         st.caption('引用文档')
         # 这里我们设定一个高度为300的容器
         with st.container(height=200):
-            refer_div = ' <div class="message">{}</div>'
-            demo_txt = refer_div.format('来源:xxx.pdf\n\n')
+            refer_div = '<div class="message">{}</div>'
+            demo_txt = refer_div.format('来源:xxx.pdf\n\n来源:xxx2.pdf')
             st.html(demo_txt)
 
     with col2:
-        st.header("帮助中心")
+        # st.header("帮助中心")
         # st.image("https://static.streamlit.io/examples/dog.jpg")
         # st.html()
-        st.image("./static/images/help_04.png")
-        st.image("./static/images/help_05.png")
+        # st.image("./static/images/help_04.png")
+        with st.container(height=800):
+            st.image("./static/images/help_05.png")
