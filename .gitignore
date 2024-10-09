@@ -5,3 +5,5 @@ data/*
 .nv/*
 .DS_Store
 .ipynb_checkpoints/
+/.idea/
+/embedding_models/

@@ -15,7 +15,8 @@ bot_template = """
 
 def chatbox():
     # 设定2列
-    st.image("./static/images/head_02.png")
+    st.image("./static/head_bg.png", width=2000)
+    st.html("")
     col1, col2 = st.columns([4, 1])
     # 设定不同的列标题和展示的内容
     with col1:
@@ -57,7 +58,7 @@ def chatbox():
         # 这里我们设定一个高度为300的容器
         with st.container(height=200):
             refer_div = '<div class="message">{}</div>'
-            demo_txt = refer_div.format('来源:xxx.pdf\n\n来源:xxx2.pdf')
+            demo_txt = refer_div.format('来源:xxx.pdf<br>来源:xxx2.pdf')
             st.html(demo_txt)
 
     with col2:

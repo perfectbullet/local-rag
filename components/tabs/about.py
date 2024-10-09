@@ -57,4 +57,4 @@ def about():
 
     st.subheader("帮助")
     st.markdown(help_html, unsafe_allow_html=True)
-    st.image("./static/images/sidebar_header.png")
+    # st.image("./static/images/sidebar_header.png")

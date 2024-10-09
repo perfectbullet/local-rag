@@ -31,7 +31,7 @@ def set_page_config():
       display:none;
     }
     .st-emotion-cache-1jicfl2{
-        padding:0px 5rem;
+        padding:0px 0rem;
     }
     div[data-testid="stSidebarContent"]{
         background: #4582d3;
@@ -51,7 +51,20 @@ def set_page_config():
         }
     }
     div[data-testid="stSidebarHeader"]{
-        background: url("http://125.69.16.175:8502/media/b8cc86473a1f0794adfeee099753e8be097052c328f1e6741b2cab21.png");
+        background: url("/app/static/logo.png");
+    }
+    .st-emotion-cache-1nuoks4 {
+        width: 1512px;
+        position: relative;
+        display: flex;
+        flex: 1 1 0%;
+        flex-direction: column;
+        gap: 0rem;
+    }
+    .st-emotion-cache-1srxgaf {
+        width: 1544px;
+        position: relative;
+        gap: 0rem;
     }
     </style>
     """,
