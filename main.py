@@ -1,20 +1,15 @@
-import time
+import os
 
-import streamlit as st
+os.environ["HTTP_PROXY"] = 'http://127.0.0.1:58591'
+os.environ["HTTPS_PROXY"] = 'http://127.0.0.1:58591'
+os.environ["all_proxy"] = ''
+os.environ["ALL_PROXY"] = ''
 
 from components.chatbox import chatbox
 # from components.header import set_page_header
-from components.sidebar import sidebar
 
 from components.page_config import set_page_config
 from components.page_state import set_initial_state
-
-
-# def generate_welcome_message(msg):
-#     for char in msg:
-#         time.sleep(0.025)  # TODO: Find a better way -- This is blocking :(
-#         yield char
-
 
 ## Setup Initial State
 set_initial_state()
