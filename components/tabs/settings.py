@@ -8,11 +8,11 @@ from datetime import datetime
 
 
 def settings():
-    st.header("设置")
-    st.caption("配置本地 RAG 设置和集成")
+    # st.header("设置")
+    # st.caption("配置本地 RAG 设置和集成")
 
     # st.subheader("Chat")
-    st.subheader("智能检索")
+    # st.subheader("智能检索")
     chat_settings = st.container(border=True)
     with chat_settings:
         st.text_input(

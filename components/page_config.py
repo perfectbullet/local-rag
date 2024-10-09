@@ -38,13 +38,13 @@ def set_page_config():
         color: white;
     }
     div[data-testid="stMarkdownContainer"]{
-        color: #ffffff;
+        color: #000;
         font-size: 14px;
         font-weight: bold;
     }
-    .st-c2{
-        background-color: rgb(255 255 255);
-    }
+    # .st-c2{
+    #     background-color: rgb(255 255 255);
+    # }
     button[data-testid="baseButton-headerNoPadding"] {
         path[fill='none']{
             fill: white;
@@ -65,6 +65,34 @@ def set_page_config():
         width: 1544px;
         position: relative;
         gap: 0rem;
+    }
+    .st-emotion-cache-ys1orn {
+        width: 1544px;
+        position: relative;
+        display: flex;
+        flex: 1 1 0%;
+        flex-direction: column;
+        gap: 0;
+    }
+    .st-emotion-cache-1gwvy71 h3 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.95);
+    }
+    .st-emotion-cache-jkfxgf p {
+        word-break: break-word;
+        margin-bottom: 0px;
+        font-size: 14px;
+        color: rgba(255, 255, 255, 0.95);
+    }
+    .st-emotion-cache-1rsyhoq p {
+        word-break: break-word;
+        color: rgba(255, 255, 255, 0.95);
+    }
+    .st-emotion-cache-12h5x7g p {
+        word-break: break-word;
+        margin-bottom: 0px;
+        color: rgba(255, 255, 255, 0.95);
     }
     </style>
     """,

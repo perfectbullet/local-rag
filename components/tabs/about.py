@@ -4,17 +4,17 @@ from datetime import datetime
 
 
 def about():
-    st.title("📚 本地 RAG")
+    # st.title("📚 本地 RAG")
     st.caption(f"GX软件部ZJ开发 &copy; {datetime.now().year}")
     st.write("")
 
     links_html = """
     <ul style="list-style-type:none; padding-left:0;">
         <li>
-            <a href="https://github.com/jonfairbanks/local-rag" style="color: grey;">GitHub</a>
+            <a href="https://github.com/jonfairbanks/local-rag" style="color: rgba(255, 255, 255, 0.95);">GitHub</a>
         </li>
         <li>
-            <a href="https://hub.docker.com/r/jonfairbanks/local-rag" style="color: grey;">Docker Hub</a>
+            <a href="https://hub.docker.com/r/jonfairbanks/local-rag" style="color: rgba(255, 255, 255, 0.95);">Docker Hub</a>
         </li>
     </ul>
     """
@@ -22,12 +22,12 @@ def about():
     resources_html = """
     <ul style="list-style-type:none; padding-left:0;">
         <li>
-            <a href="https://blogs.nvidia.com/blog/what-is-retrieval-augmented-generation/" style="color: grey;">
+            <a href="https://blogs.nvidia.com/blog/what-is-retrieval-augmented-generation/" style="color: rgba(255, 255, 255, 0.95);">
                 什么是 RAG？
             </a>
         </li>
         <li>
-            <a href="https://aws.amazon.com/what-is/embeddings-in-machine-learning/" style="color: grey;">
+            <a href="https://aws.amazon.com/what-is/embeddings-in-machine-learning/" style="color: rgba(255, 255, 255, 0.95);">
                 什么是嵌入？
             </a>
         </li>
@@ -37,12 +37,12 @@ def about():
     help_html = """
     <ul style="list-style-type:none; padding-left:0;">
         <li>
-            <a href="https://github.com/jonfairbanks/local-rag/issues" style="color: grey;">
+            <a href="https://github.com/jonfairbanks/local-rag/issues" style="color: rgba(255, 255, 255, 0.95);">
                 Bug报告
             </a>
         </li>
         <li>
-            <a href="https://github.com/jonfairbanks/local-rag/discussions/new?category=ideas" style="color: grey;">
+            <a href="https://github.com/jonfairbanks/local-rag/discussions/new?category=ideas" style="color: rgba(255, 255, 255, 0.95);">
                 建议
             </a>
         </li>

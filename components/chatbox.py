@@ -15,7 +15,7 @@ bot_template = """
 
 def chatbox():
     # 设定2列
-    st.image("./static/head_bg.png", width=2000)
+    st.image("./static/head_bg.png", width=2100)
     st.html("")
     col1, col2 = st.columns([4, 1])
     # 设定不同的列标题和展示的内容
@@ -67,4 +67,4 @@ def chatbox():
         # st.html()
         # st.image("./static/images/help_04.png")
         with st.container(height=800):
-            st.image("./static/images/help_05.png")
+            st.image("./static/help_center2.png")
