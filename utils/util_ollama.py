@@ -187,6 +187,7 @@ def context_chat(prompt: str, query_engine: RetrieverQueryEngine):
     """
 
     try:
+        logs.log.info('prompt is {}', prompt)
         stream = query_engine.query(prompt)
         for text in stream.response_gen:
             # print(str(text), end="", flush=True)
