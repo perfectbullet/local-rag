@@ -1,7 +1,7 @@
 import streamlit as st
 
 from utils.logs import log
-from utils.util_ollama import context_chat
+from utils.util_ollama import context_chat, chat
 
 bot_template = """
 <div class="chat-message bot">
@@ -15,8 +15,8 @@ bot_template = """
 
 def chatbox():
     # 设定2列
-    st.image("./static/head_bg.png", width=2100)
-    st.html("")
+    # st.image("./static/head_bg.png", width=2100)
+    # st.html("")
     col1, col2 = st.columns([4, 1])
     # 设定不同的列标题和展示的内容
     with col1:
@@ -30,10 +30,12 @@ def chatbox():
                 # Prevent submission if Ollama endpoint is not set
                 log.info('prompt is {}', prompt)
                 log.info('query_engine is {}', st.session_state["query_engine"])
-                if not st.session_state["query_engine"]:
-                    log.warning('Please confirm settings and upload files before proceeding. is {}')
-                    st.warning("Please confirm settings and upload files before proceeding.")
-                    st.stop()
+
+                #
+                # if not st.session_state["query_engine"]:
+                #     log.warning('Please confirm settings and upload files before proceeding')
+                #     st.warning("Please confirm settings and upload files before proceeding.")
+                #     st.stop()
 
                 # Add the user input to messages state
                 st.session_state["messages"].append({"role": "user", "content": prompt})
@@ -43,15 +45,18 @@ def chatbox():
                 # Generate llama-index stream with user input
                 with st.chat_message("assistant"):
                     with st.spinner("回答中..."):
-                        response = st.write_stream(
-                            # chat(
-                            #     prompt=prompt
-                            # )
-                            context_chat(
-                                prompt=prompt, query_engine=st.session_state["query_engine"]
+                        if st.session_state["query_engine"] is None:
+                            response = st.write_stream(chat(prompt=prompt))
+                        else:
+                            response = st.write_stream(
+                                # chat(
+                                #     prompt=prompt
+                                # )
+                                context_chat(
+                                    prompt=prompt, query_engine=st.session_state["query_engine"]
+                                )
                             )
-                        )
-
+                log.info('response is {}'.format(response))
                 # Add the final response to messages state
                 st.session_state["messages"].append({"role": "assistant", "content": response})
         st.caption('引用文档')
