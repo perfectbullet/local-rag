@@ -21,44 +21,45 @@ def chatbox():
     # 设定不同的列标题和展示的内容
     with col1:
         with st.container(border=True, height=600):
-            for msg in st.session_state["messages"]:
-                log.info('msg is {}'.format(msg))
-                st.chat_message(msg["role"]).write(msg["content"])
-                # st.chat_message(msg["role"]).write_stream(generate_welcome_message(msg['content']))
 
             if prompt := st.chat_input("请输入你要搜索的关键词"):
                 # Prevent submission if Ollama endpoint is not set
                 log.info('prompt is {}', prompt)
                 log.info('query_engine is {}', st.session_state["query_engine"])
 
-                #
                 # if not st.session_state["query_engine"]:
                 #     log.warning('Please confirm settings and upload files before proceeding')
                 #     st.warning("Please confirm settings and upload files before proceeding.")
                 #     st.stop()
-
-                # Add the user input to messages state
-                st.session_state["messages"].append({"role": "user", "content": prompt})
-                with st.chat_message("user"):
-                    st.markdown(prompt)
+                # with st.chat_message("user"):
+                #     st.markdown(prompt)
 
                 # Generate llama-index stream with user input
-                with st.chat_message("assistant"):
-                    with st.spinner("回答中..."):
-                        if st.session_state["query_engine"] is None:
-                            response = st.write_stream(chat(prompt=prompt))
-                        else:
-                            response = st.write_stream(
-                                # chat(
-                                #     prompt=prompt
-                                # )
-                                context_chat(
-                                    prompt=prompt, query_engine=st.session_state["query_engine"]
+                with st.container(border=True):
+                    with st.chat_message("assistant"):
+                        with st.spinner("回答中..."):
+                            if st.session_state["query_engine"] is None:
+                                response = st.write_stream(chat(prompt=prompt))
+                            else:
+                                response = st.write_stream(
+                                    # chat(
+                                    #     prompt=prompt
+                                    # )
+                                    context_chat(
+                                        prompt=prompt, query_engine=st.session_state["query_engine"]
+                                    )
                                 )
-                            )
+
+                # st.chat_message(msg["role"]).write_stream(generate_welcome_message(msg['content']))
                 log.info('response is {}'.format(response))
+                # Add the user input to messages state
+                st.session_state["messages"].append({"role": "user", "content": prompt})
                 # Add the final response to messages state
                 st.session_state["messages"].append({"role": "assistant", "content": response})
+                with st.container(border=True):
+                    for msg in st.session_state["messages"]:
+                        log.info('msg is {}'.format(msg))
+                        st.chat_message(msg["role"]).write(msg["content"])
         st.caption('引用文档')
         # 这里我们设定一个高度为300的容器
         with st.container(height=200):
