@@ -2,7 +2,8 @@
 
 
 
-
+import os
+os.environ['USER_AGENT'] = 'zjagent'
 import bs4
 from langchain import hub
 from langchain_chroma import Chroma
@@ -31,7 +32,7 @@ docs = loader.load()
 
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 splits = text_splitter.split_documents(docs)
-vectorstore = Chroma.from_documents(documents=splits, embedding=OllamaEmbeddings(model='llama3', base_url='http://125.69.16.175:11434/v1'))
+vectorstore = Chroma.from_documents(documents=splits, embedding=OllamaEmbeddings(model='llama3', base_url='http://125.69.16.175:11434'))
 
 # Retrieve and generate using the relevant snippets of the blog.
 retriever = vectorstore.as_retriever()
