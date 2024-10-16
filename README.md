@@ -24,11 +24,8 @@ Features:
 
 Learn More:
 
-- [Setup & Deploy the App](docs/setup.md)
-- [Using Local RAG](docs/usage.md)
-- [RAG Pipeline](docs/pipeline.md)
-- [Planned Features](docs/todo.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Known Bugs & Issues](docs/todo.md#known-issues--bugs)
-- [Resources](docs/resources.md)
-- [Contributing](docs/contributing.md)
+## 安装依赖
+```shell
+pip install -qU "langchain-chroma>=0.1.2"
+pip install -U langchain-ollama
+```
