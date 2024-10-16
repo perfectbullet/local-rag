@@ -15,3 +15,6 @@ black
 #colorama = { version, sys_platform = "== 'win32'" }
 ebooklib
 llama-index-core
+
+# add by zj
+loguru

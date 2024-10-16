@@ -1,6 +1,6 @@
 import streamlit as st
 
-from utils.logs import log
+from utils.logs import logger
 from utils.util_ollama import context_chat, chat
 
 bot_template = """
@@ -24,11 +24,11 @@ def chatbox():
 
             if prompt := st.chat_input("请输入你要搜索的关键词"):
                 # Prevent submission if Ollama endpoint is not set
-                log.info('prompt is {}', prompt)
-                log.info('query_engine is {}', st.session_state["query_engine"])
+                logger.info('prompt is {}', prompt)
+                logger.info('query_engine is {}', st.session_state["query_engine"])
 
                 # if not st.session_state["query_engine"]:
-                #     log.warning('Please confirm settings and upload files before proceeding')
+                #     logger.warning('Please confirm settings and upload files before proceeding')
                 #     st.warning("Please confirm settings and upload files before proceeding.")
                 #     st.stop()
                 # with st.chat_message("user"):
@@ -51,14 +51,14 @@ def chatbox():
                                 )
 
                 # st.chat_message(msg["role"]).write_stream(generate_welcome_message(msg['content']))
-                log.info('response is {}'.format(response))
+                logger.info('response is {}'.format(response))
                 # Add the user input to messages state
                 st.session_state["messages"].append({"role": "user", "content": prompt})
                 # Add the final response to messages state
                 st.session_state["messages"].append({"role": "assistant", "content": response})
                 with st.container(border=True):
                     for msg in st.session_state["messages"]:
-                        log.info('msg is {}'.format(msg))
+                        logger.info('msg is {}'.format(msg))
                         st.chat_message(msg["role"]).write(msg["content"])
         st.caption('引用文档')
         # 这里我们设定一个高度为300的容器
