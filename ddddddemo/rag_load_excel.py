@@ -45,26 +45,26 @@ def add_data_from_json():
     file_name = 'ddddddemo/oktest_image_url_local_image.json'
     recovered_json = read_json(file_name)
     vector_store = create_langchain_embedding_db(collection_name='oktest_image_url_local_image')
-    # doc_list = []
-    # seen_urls = set()
-    # for data in recovered_json:
-    #     if data['url'] in seen_urls:
-    #         continue
-    #     metadata = {
-    #         'image_path': data.get('image_path', ''),
-    #         'name': data['item_name'],
-    #         'company': data['item_name'],
-    #         'image_url': data['image_url']
-    #     }
-    #     seen_urls.add(data['url'])
-    #     doc = Document(
-    #         page_content='{}'.format(data['content']),
-    #         metadata={"source": json.dumps(metadata, ensure_ascii=False)},
-    #     )
-    #     doc_list.append(doc)
-    # print('len of doc_list ', len(doc_list))
-    # # print('doc_list is {}'.format(doc_list[:3]))
-    # ids = add_document(vector_store, doc_list)
+    doc_list = []
+    seen_urls = set()
+    for data in recovered_json:
+        if data['url'] in seen_urls:
+            continue
+        metadata = {
+            'image_path': data.get('image_path', ''),
+            'name': data['item_name'],
+            'company': data['item_name'],
+            'image_url': data['image_url']
+        }
+        seen_urls.add(data['url'])
+        doc = Document(
+            page_content='{}'.format(data['content']),
+            metadata={"source": json.dumps(metadata, ensure_ascii=False)},
+        )
+        doc_list.append(doc)
+    print('len of doc_list ', len(doc_list))
+    # print('doc_list is {}'.format(doc_list[:3]))
+    ids = add_document(vector_store, doc_list)
     # 正义堂祛红血丝护眼液OEM贴牌代工
     # 三申卧式圆形压力蒸汽灭菌器YX450W双温度显示和控制
     for res, score in query_vector_store(vector_store, "脂肪吸引器", ):

@@ -29,3 +29,11 @@ Learn More:
 pip install -qU "langchain-chroma>=0.1.2"
 pip install -U langchain-ollama
 ```
+
+
+
+
+
+
+
+[local-rag-demo](http://localhost:8501/app/static/oktest_image_url//1446441727800.jpg)

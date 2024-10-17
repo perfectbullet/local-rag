@@ -7,7 +7,23 @@ import streamlit as st
 
 from exiftool import ExifToolHelper
 
-import utils.logs as logs
+from utils.logs import logger
+from deal_excel_and_json import read_json, save2json
+
+
+def get_knowledge_base():
+    """
+    """
+    try:
+        knowledge_base_config_path = 'knowledge_base_config.json'
+        knowledge_base_config = read_json(knowledge_base_config_path)
+        logger.info(knowledge_base_config)
+        knowledge_base_list = [data['knowledge_base_name'] for data in knowledge_base_config]
+        # {"knowledge_base_name": "alpaca_merge-医疗器械-产品详细", "collection_dir": "oktest_image_url_local_image"}
+        st.session_state["knowledge_base_list"] = knowledge_base_list
+    except Exception as err:
+        logger.error(f"Failed to retrieve Ollama model list: {err}")
+        return []
 
 ###################################
 #
@@ -33,12 +49,12 @@ def save_uploaded_file(uploaded_file: bytes, save_dir: str):
     try:
         if not os.path.exists(save_dir):
             os.makedirs(save_dir)
-            logs.log.info(f"Directory {save_dir} did not exist so creating it")
+            logger.info(f"Directory {save_dir} did not exist so creating it")
         with open(os.path.join(save_dir, uploaded_file.name), "wb") as f:
             f.write(uploaded_file.getbuffer())
-            logs.log.info(f"Upload {uploaded_file.name} saved to disk")
+            logger.info(f"Upload {uploaded_file.name} saved to disk")
     except Exception as e:
-        logs.log.error(f"Error saving upload to disk: {e}")
+        logger.error(f"Error saving upload to disk: {e}")
 
 
 ###################################
@@ -95,7 +111,7 @@ def clone_github_repo(repo: str):
         clone_command = f"git clone -q {repo_endpoint} {save_dir}/{repo}"
         try:
             subprocess.run(clone_command, shell=True)
-            logs.log.info(f"Cloned {repo} repo")
+            logger.info(f"Cloned {repo} repo")
             return True
         except Exception as e:
             Exception(f"Error cloning {repo} GitHub repo: {e}")

@@ -1,8 +1,9 @@
 import streamlit as st
 
-import utils.logs as logs
+from utils.logs import logger
+from utils.helpers import get_knowledge_base
 
-from utils.util_ollama import get_models
+from utils.util_ollama import get_models, get_embedding_models
 
 gx_ollama = 'http://125.69.16.175:11434'
 zj_ollama = "http://localhost:11434"
@@ -13,6 +14,9 @@ def set_initial_state():
     ###########
     # General #
     ###########
+    if "knowledge_base_list" not in st.session_state:
+        logger.info('init knowledge base')
+        get_knowledge_base()
 
     if "collection_name" not in st.session_state:
         st.session_state["collection_name"] = None
@@ -27,7 +31,9 @@ def set_initial_state():
         st.session_state["ollama_endpoint"] = gx_ollama
 
     if "embedding_model" not in st.session_state:
-        st.session_state["embedding_model"] = "Default (bge-large-en-v1.5)"
+        embedding_models = get_embedding_models()
+        logger.info('embedding_models is {}'.format(embedding_models))
+        st.session_state["embedding_models"] = get_embedding_models()
 
     if "ollama_models" not in st.session_state:
         try:

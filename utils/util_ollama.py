@@ -1,9 +1,11 @@
+from typing import List
+
 import ollama
 import os
 
 import streamlit as st
 
-import utils.logs as logs
+from utils.logs import logger
 
 # This is not used but required by llama-index and must be imported FIRST
 os.environ["OPENAI_API_KEY"] = "sk-abc123"
@@ -22,25 +24,21 @@ from llama_index.core.query_engine.retriever_query_engine import RetrieverQueryE
 def create_client(host: str):
     """
     Creates a client for interacting with the Ollama API.
-
-    Parameters:
+    Parameters
         - host (str): The hostname or IP address of the Ollama server.
-
     Returns:
         - An instance of the Ollama client.
-
     Raises:
         - Exception: If there is an error creating the client.
-
     Notes:
         This function creates a client for interacting with the Ollama API using the `ollama` library. It takes a single parameter, `host`, which should be the hostname or IP address of the Ollama server. The function returns an instance of the Ollama client, or raises an exception if there is an error creating the client.
     """
     try:
         client = ollama.Client(host=host)
-        logs.log.info("Ollama chat client created successfully")
+        logger.info("Ollama chat client created successfully")
         return client
     except Exception as err:
-        logs.log.error(f"Failed to create Ollama client: {err}")
+        logger.error(f"Failed to create Ollama client: {err}")
         return False
 
 
@@ -49,6 +47,32 @@ def create_client(host: str):
 # Get Models
 #
 ###################################
+def get_embedding_models() -> List:
+    """
+    Retrieves a list of available embedding models from the Ollama server.
+    Returns:
+        - models (list[str]): A list of available language model names.
+    Raises:
+        - Exception: If there is an error retrieving the list of models.
+    """
+    try:
+        chat_client = create_client(st.session_state["ollama_endpoint"])
+        data = chat_client.list()
+        embedding_models = []
+        for embedding_model in data["models"]:
+            if 'bge' in embedding_model["name"]:
+                embedding_models.append(embedding_model["name"])
+        st.session_state["embedding_models"] = embedding_models
+        if len(embedding_models) > 0:
+            logger.info("Ollama models loaded successfully")
+        else:
+            logger.warning(
+                "Ollama did not return any models. Make sure to download some!"
+            )
+        return embedding_models
+    except Exception as err:
+        logger.error(f"Failed to retrieve Ollama model list: {err}")
+        return []
 
 
 def get_models():
@@ -75,19 +99,16 @@ def get_models():
         models = []
         for model in data["models"]:
             models.append(model["name"])
-
         st.session_state["ollama_models"] = models
-
         if len(models) > 0:
-            logs.log.info("Ollama models loaded successfully")
+            logger.info("Ollama models loaded successfully")
         else:
-            logs.log.warn(
+            logger.warning(
                 "Ollama did not return any models. Make sure to download some!"
             )
-
         return models
     except Exception as err:
-        logs.log.error(f"Failed to retrieve Ollama model list: {err}")
+        logger.error(f"Failed to retrieve Ollama model list: {err}")
         return []
 
 
@@ -114,10 +135,10 @@ def create_ollama_llm(model: str, base_url: str, system_prompt: str = None, requ
     try:
         # Settings.llm = Ollama(model=model, base_url=base_url, system_prompt=system_prompt, request_timeout=request_timeout)
         Settings.llm = Ollama(model=model, base_url=base_url, request_timeout=request_timeout)
-        logs.log.info("Ollama LLM instance created successfully")
+        logger.info("Ollama LLM instance created successfully")
         return Settings.llm
     except Exception as e:
-        logs.log.error(f"Error creating Ollama language model: {e}")
+        logger.error(f"Error creating Ollama language model: {e}")
         return None
 
 
@@ -149,7 +170,7 @@ def chat(prompt: str):
         for chunk in stream:
             yield chunk.delta
     except Exception as err:
-        logs.log.error(f"Ollama chat stream error: {err}")
+        logger.error(f"Ollama chat stream error: {err}")
         return
 
 
@@ -188,11 +209,11 @@ def context_chat(prompt: str, query_engine: RetrieverQueryEngine):
     """
 
     try:
-        logs.log.info('prompt is {}', prompt)
+        logger.info('prompt is {}', prompt)
         stream = query_engine.query(prompt)
         for text in stream.response_gen:
             # print(str(text), end="", flush=True)
             yield str(text)
     except Exception as err:
-        logs.log.error(f"Ollama chat stream error: {err}")
+        logger.error(f"Ollama chat stream error: {err}")
         return

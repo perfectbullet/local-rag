@@ -6,15 +6,9 @@ from components.tabs.settings import settings
 
 
 def sidebar():
-    with st.sidebar: 
-        # tab1, tab2, tab3 = st.sidebar.tabs(["Data Sources", "Settings", "About"])
-        tab1, tab2, tab3 = st.sidebar.tabs(["数据源", "设置", "关于"])
-
-        with tab1:
+    with st.sidebar:
+        with st.container(border=True):
             sources()
 
-        with tab2:
-            settings()
 
-        with tab3:
-            about()
+        settings()

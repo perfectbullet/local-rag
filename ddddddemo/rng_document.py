@@ -277,7 +277,7 @@ def create_langchain_ollama_llm(
         llm = ChatOllama(
             model=model,
             base_url=base_url,
-            # temperature=0,
+            temperature=0,
             # other params...
         )
         return llm
