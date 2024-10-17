@@ -1,8 +1,22 @@
-import streamlit as st
+import os
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_ollama.llms import OllamaLLM
+
+os.environ["HTTP_PROXY"] = ''
+os.environ["HTTPS_PROXY"] = ''
+os.environ["all_proxy"] = ''
+os.environ["ALL_PROXY"] = ''
+
+template = """Question: {question}
+Answer: Let's think step by step."""
+
+prompt = ChatPromptTemplate.from_template(template)
+
+model = OllamaLLM(model="llama3", base_url='http://125.69.16.175:11434/v1')
+
+chain = prompt | model
+
+res = chain.invoke({"question": "What is LangChain?"})
+print(res)
 
 
-uploaded_file = st.file_uploader("选择文集那", help='helphelphelphelphelphelp')
-if uploaded_file is not None:
-    # To read file as bytes:
-    bytes_data = uploaded_file.getvalue()
-    st.write(bytes_data)
