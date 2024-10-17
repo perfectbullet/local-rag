@@ -7,3 +7,4 @@ data/*
 .ipynb_checkpoints/
 /.idea/
 /embedding_models/
+/ddddddemo/vector_db/

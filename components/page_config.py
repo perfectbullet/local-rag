@@ -33,71 +33,9 @@ def set_page_config():
     .st-emotion-cache-1jicfl2{
         padding:0px 0rem;
     }
-    # div[data-testid="stSidebarContent"]{
-    #     background: #4582d3;
-    #     color: white;
-    # }
-    # div[data-testid="stMarkdownContainer"]{
-    #     color: #000;
-    #     font-size: 14px;
-    #     font-weight: bold;
-    # }
-    # # .st-c2{
-    # #     background-color: rgb(255 255 255);
-    # # }
-    # button[data-testid="baseButton-headerNoPadding"] {
-    #     path[fill='none']{
-    #         fill: white;
-    #     }
-    # }
     div[data-testid="stSidebarHeader"]{
         background: url("/app/static/logo.png");
     }
-    # .st-emotion-cache-1nuoks4 {
-    #     width: 1512px;
-    #     position: relative;
-    #     display: flex;
-    #     flex: 1 1 0%;
-    #     flex-direction: column;
-    #     gap: 0rem;
-    # }
-    # .st-emotion-cache-1srxgaf {
-    #     width: 1544px;
-    #     position: relative;
-    #     gap: 0rem;
-    # }
-    # .st-emotion-cache-ys1orn {
-    #     width: 1544px;
-    #     position: relative;
-    #     display: flex;
-    #     flex: 1 1 0%;
-    #     flex-direction: column;
-    #     gap: 0;
-    # }
-    # .st-emotion-cache-1gwvy71 h3 {
-    #     font-size: 1.125rem;
-    #     font-weight: 600;
-    #     color: rgba(255, 255, 255, 0.95);
-    # }
-    # .st-emotion-cache-jkfxgf p {
-    #     word-break: break-word;
-    #     margin-bottom: 0px;
-    #     font-size: 14px;
-    #     color: rgba(255, 255, 255, 0.95);
-    # }
-    # .st-emotion-cache-1rsyhoq p {
-    #     word-break: break-word;
-    #     color: rgba(255, 255, 255, 0.95);
-    # }
-    # .st-emotion-cache-12h5x7g p {
-    #     word-break: break-word;
-    #     margin-bottom: 0px;
-    #     color: rgba(255, 255, 255, 0.95);
-    # }
-    # .st-emotion-cache-1rsyhoq p {
-    #     word-break: break-word;
-    #     color: rgba(0, 0, 0, 0.95);
-    # }
     </style>
     """,
         unsafe_allow_html=True,

@@ -1,7 +1,10 @@
+import json
+import os.path
+
 import streamlit as st
 
 from utils.langchain_rag_for_st import langchain_chat_stream
-from utils.logs import log
+from utils.logs import logger
 from utils.util_ollama import context_chat, chat
 
 
@@ -13,8 +16,8 @@ def chatbox():
         with st.container(border=True):
             if prompt := st.chat_input("请输入你要搜索的关键词"):
                 # Prevent submission if Ollama endpoint is not set
-                log.info('prompt is {}', prompt)
-                log.info('query_engine is {}', st.session_state["query_engine"])
+                logger.info('prompt is {}', prompt)
+                logger.info('query_engine is {}', st.session_state["query_engine"])
                 # Generate llama-index stream with user input
                 with st.container(border=True):
                     with st.chat_message("assistant"):
@@ -34,9 +37,18 @@ def chatbox():
                                     output_placeholder.markdown(response)
                                 source_txt = "### 参考文档如下："
                                 for sc in st.session_state["sources"]:
-                                    log.info('sc is {}', sc)
-                                    source_txt += '\n\n**{}**'.format(sc)
-                                    source_placeholder.markdown(source_txt)
+                                    sc_dict = json.loads(sc)
+                                    logger.info('sc is {}', sc_dict)
+                                    # ![local-rag-demo](http://localhost:8501/app/static/oktest_image_url//1446441727800.jpg)
+                                    base_url = 'http://localhost:8501/app/static/'
+                                    image_path = sc_dict.get('image_path', '')
+                                    if image_path:
+                                        image_markdown_url = '![{}]({}{})'.format(os.path.basename(image_path), base_url, image_path)
+                                        source_txt += '\n\n**{}**\n\n{}'.format(sc_dict['name'], image_markdown_url)
+                                        source_placeholder.markdown(source_txt)
+                                    else:
+                                        source_txt += '\n\n**{}**\n\n{}'.format(sc_dict['name'], 'no image found')
+                                        source_placeholder.markdown(source_txt)
                             else:
                                 response = st.write_stream(
                                     context_chat(

@@ -154,17 +154,14 @@ def demo_add_document(vector_store: Chroma):
     vector_store.add_documents(documents=documents, ids=uuids)
 
 
-def query_vector_store(vector_store: Chroma, query: str, k=4, qfilter: Dict = None):
+def query_vector_store(vector_store: Chroma, query: str, k=10, qfilter: Dict = None):
     """
-
     Args:
         vector_store:
         query:
         k: Number of results to return. Defaults to 4.
         qfilter:
-
     Returns:
-
     results = vector_store.similarity_search(
         "LangChain provides abstractions to make working with LLMs easy",
         k=4,
@@ -289,10 +286,11 @@ def create_langchain_ollama_llm(
         return None
 
 
-def rag_chat_stream(query: str,
-                    vector_store: Chroma,
-                    llm: ChatOllama
-                    ):
+def rag_chat_stream(
+        query: str,
+        vector_store: Chroma,
+        llm: ChatOllama
+):
     """
     Args:
         input:

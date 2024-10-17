@@ -14,6 +14,9 @@ def set_initial_state():
     # General #
     ###########
 
+    if "collection_name" not in st.session_state:
+        st.session_state["collection_name"] = None
+
     if "sources" not in st.session_state:
         st.session_state["sources"] = []
 
