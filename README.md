@@ -32,3 +32,19 @@ Learn More:
 - [Known Bugs & Issues](docs/todo.md#known-issues--bugs)
 - [Resources](docs/resources.md)
 - [Contributing](docs/contributing.md)
+
+
+
+
+
+# note of problems
+
+Installing collected packages: pillow, pi_heif
+  Attempting uninstall: pillow
+    Found existing installation: Pillow 9.0.1
+    Not uninstalling pillow at /usr/lib/python3/dist-packages, outside environment /home/zj/python-venvs/local-rag
+    Can't uninstall 'Pillow'. No files were found to uninstall.
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+llama-index-readers-file 0.2.2 requires pypdf<5.0.0,>=4.0.1, but you have pypdf 5.0.1 which is incompatible.
+Successfully installed pi_heif-0.18.0 pillow-10.4.0
+(local-rag) zj@zj-desktop:~/local-rag/ddddddemo$ pip uninstall pypdf

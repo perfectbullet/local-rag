@@ -14,6 +14,9 @@ def set_initial_state():
     # General #
     ###########
 
+    if "sources" not in st.session_state:
+        st.session_state["sources"] = []
+
     if "sidebar_state" not in st.session_state:
         st.session_state["sidebar_state"] = "expanded"
 

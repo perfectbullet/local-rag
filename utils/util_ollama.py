@@ -121,6 +121,7 @@ def create_ollama_llm(model: str, base_url: str, system_prompt: str = None, requ
         return None
 
 
+
 ###################################
 #
 # Chat (no context)
