@@ -1,5 +1,14 @@
 import streamlit as st
+from streamlit_javascript import st_javascript
+
 from components.sidebar import sidebar
+
+
+
+
+
+
+
 
 
 def set_page_config():
@@ -19,7 +28,6 @@ def set_page_config():
     ### Sidebar
     sidebar()
 
-    # Remove the Streamlit `Deploy` button from the Header
     # 修改页面布局
     st.markdown(
         r"""
@@ -51,22 +59,19 @@ def set_page_config():
     }
     </style>
     
+        
+        
     """,
         unsafe_allow_html=True,
     )
 
+    # document.querySelector('button[data-testid="stBaseButton-secondary"]').innerHTML = '选择222';
 
-    hidden_script = st.empty();
-    # 定义 JavaScript 代码
-    st.html(
-        """
-        <script>
-            console.log('asdfadsdfsd')
-           document.querySelector('button[data-testid="stBaseButton-secondary"]').innerHTML = '选择222';
-        </script>
-        """,
-    )
 
     # div[data - testid = "stSidebarHeader"]{
     #     background: url("/app/static/logo.png") no - repeat;
     # }
+    with open('ok.js', encoding='utf8') as f:
+        script = f.read()
+        print('script is ', script)
+    st_javascript(script)
