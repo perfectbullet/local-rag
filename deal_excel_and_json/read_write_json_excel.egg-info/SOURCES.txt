@@ -1,0 +1,7 @@
+setup.py
+read_write_json_excel.egg-info/PKG-INFO
+read_write_json_excel.egg-info/SOURCES.txt
+read_write_json_excel.egg-info/dependency_links.txt
+read_write_json_excel.egg-info/requires.txt
+read_write_json_excel.egg-info/top_level.txt
+read_write_json_excel.egg-info/zip-safe
