@@ -4,15 +4,7 @@ from streamlit_javascript import st_javascript
 from components.sidebar import sidebar
 
 
-
-
-
-
-
-
-
 def set_page_config():
-    
     sidebar_state = st.session_state["sidebar_state"]
     print('sidebar_state is {}'.format(sidebar_state))
 
@@ -20,7 +12,7 @@ def set_page_config():
         # page_title="Local RAG",
         page_title="检索增强",
         page_icon="📚",
-        layout="wide", 
+        layout="wide",
         initial_sidebar_state=sidebar_state,
         # menu_items={},
     )
@@ -58,19 +50,10 @@ def set_page_config():
         align-items: center !important;
     }
     </style>
-    
-        
-        
     """,
         unsafe_allow_html=True,
     )
 
-    # document.querySelector('button[data-testid="stBaseButton-secondary"]').innerHTML = '选择222';
-
-
-    # div[data - testid = "stSidebarHeader"]{
-    #     background: url("/app/static/logo.png") no - repeat;
-    # }
     with open('ok.js', encoding='utf8') as f:
         script = f.read()
         print('script is ', script)
