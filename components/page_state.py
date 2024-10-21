@@ -1,3 +1,4 @@
+import sqlite3
 import streamlit as st
 
 from utils.logs import logger
@@ -11,12 +12,30 @@ zj_ollama = "http://localhost:11434"
 
 def set_initial_state():
 
+    if 'data_base' not in st.session_state:
+        data_base_name = 'local_rag.db'
+        conn = sqlite3.connect(data_base_name)
+        # 创建一个表
+        cur = conn.cursor()
+        cur.execute('''
+        CREATE TABLE IF NOT EXISTS file_list (
+            id INTEGER PRIMARY KEY,
+            filename TEXT NOT NULL,
+            filetype TEXT NOT NULL,
+            knowledge_base TEXT NOT NULL,
+            embedded BOOLEAN NOT NULL
+        )
+        ''')
+        st.session_state["data_base_name"] = data_base_name
+
     ###########
     # General #
     ###########
     if "knowledge_base_list" not in st.session_state:
         logger.info('init knowledge base')
         get_knowledge_base()
+    if 'selected_knowledge_base' not in st.session_state:
+        st.session_state["selected_knowledge_base"] = st.session_state["knowledge_base_list"][0]
 
     if "collection_name" not in st.session_state:
         st.session_state["collection_name"] = None
@@ -30,7 +49,7 @@ def set_initial_state():
     if "ollama_endpoint" not in st.session_state:
         st.session_state["ollama_endpoint"] = gx_ollama
 
-    if "embedding_model" not in st.session_state:
+    if "embedding_models" not in st.session_state:
         embedding_models = get_embedding_models()
         logger.info('embedding_models is {}'.format(embedding_models))
         st.session_state["embedding_models"] = get_embedding_models()
@@ -117,7 +136,7 @@ def set_initial_state():
         st.session_state["top_k"] = 3
 
     if "embedding_model" not in st.session_state:
-        st.session_state["embedding_model"] = None
+        st.session_state["embedding_model"] = st.session_state["embedding_models"][0]
 
     if "other_embedding_model" not in st.session_state:
         st.session_state["other_embedding_model"] = None
