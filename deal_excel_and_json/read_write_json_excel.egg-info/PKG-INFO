@@ -1,0 +1,10 @@
+Metadata-Version: 2.1
+Name: read-write-json-excel
+Version: 0.1.2
+Summary: demo of setup.py
+Home-page: https://perfectbullet.github.io/
+Author: zhoujing GXKJ
+Author-email: zhoujing@gx.com
+License: MIT-0
+Requires-Python: >=3.8
+Requires-Dist: python-docx
