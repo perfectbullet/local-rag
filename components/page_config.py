@@ -54,7 +54,7 @@ def set_page_config():
         unsafe_allow_html=True,
     )
 
-    with open('ok.js', encoding='utf8') as f:
-        script = f.read()
-        print('script is ', script)
-    st_javascript(script)
+    # with open('ok.js', encoding='utf8') as f:
+    #     script = f.read()
+    #     print('script is ', script)
+    # st_javascript(script)
