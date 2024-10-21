@@ -42,6 +42,11 @@ def add_data_from_excel():
 
 
 def add_data_from_json():
+    """
+    按 sft数据集向量化示例
+    Returns:
+
+    """
     file_name = 'ddddddemo/oktest_image_url_local_image.json'
     recovered_json = read_json(file_name)
     vector_store = create_langchain_embedding_db(collection_name='oktest_image_url_local_image')

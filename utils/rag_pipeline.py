@@ -79,17 +79,6 @@ def rag_pipeline(uploaded_files: list = None):
     embedding_model = st.session_state["embedding_model"]
     hf_embedding_model = None
 
-    if embedding_model == None:
-        hf_embedding_model = "BAAI/bge-large-en-v1.5"
-
-    if embedding_model == "Default (bge-large-en-v1.5)":
-        hf_embedding_model = "BAAI/bge-large-en-v1.5"
-
-    if embedding_model == "Large (Salesforce/SFR-Embedding-Mistral)":
-        hf_embedding_model = "Salesforce/SFR-Embedding-Mistral"
-
-    if embedding_model == "Other":
-        hf_embedding_model = st.session_state["other_embedding_model"]
 
     # 测试写死的嵌入模型
     hf_embedding_model = './embedding_models/bge-large-en-v1.5'

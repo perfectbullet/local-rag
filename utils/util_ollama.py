@@ -56,7 +56,8 @@ def get_embedding_models() -> List:
         - Exception: If there is an error retrieving the list of models.
     """
     try:
-        chat_client = create_client(st.session_state["ollama_endpoint"])
+        ollama_endpoint = st.session_state["ollama_endpoint"]
+        chat_client = create_client(ollama_endpoint)
         data = chat_client.list()
         embedding_models = []
         for embedding_model in data["models"]:
@@ -71,7 +72,7 @@ def get_embedding_models() -> List:
             )
         return embedding_models
     except Exception as err:
-        logger.error(f"Failed to retrieve Ollama model list: {err}")
+        logger.error(f"Failed to retrieve Ollama model list: {err}, ollama_endpoint {ollama_endpoint}")
         return []
 
 

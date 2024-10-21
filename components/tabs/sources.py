@@ -1,7 +1,7 @@
 import streamlit as st
 from streamlit_modal import Modal
 
-from components.tabs.local_files import local_files
+from components.tabs.local_files_langchain import langchain_local_files
 from components.tabs.github_repo import github_repo
 from components.tabs.website import website
 
@@ -21,7 +21,7 @@ def sources():
     if modal.is_open():
         with modal.container():
             # with st.expander("💻 &nbsp; **本地文件**", expanded=True):
-            local_files()
+            langchain_local_files()
 
     # databae modal
     data_base_modal = Modal(

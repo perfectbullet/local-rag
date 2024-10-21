@@ -219,7 +219,6 @@ def load_pdf(file_path):
     Args:
         file_path:
     Returns:
-
     pip install "langchain-unstructured[local]"
     from langchain_unstructured import UnstructuredLoader
     file_paths = [
@@ -229,14 +228,13 @@ def load_pdf(file_path):
     loader = UnstructuredLoader(file_paths)
     https://python.langchain.com/docs/integrations/document_loaders/unstructured_file/
     """
-    #
     loader = UnstructuredPDFLoader(file_path)
 
     # 加载多个文档
     doc_splits = []
-    print("Loading raw document..., it may take long time " + loader.file_path)
+    logger.info("Loading raw document..., it may take long time " + loader.file_path)
     raw_documents = loader.load()
-    print("Splitting text...")
+    logger.info("Splitting text...")
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=1000,
         chunk_overlap=200,
@@ -254,6 +252,7 @@ def load_pdf_page(file_path):
         file_path:
     Returns:
     """
+    logger.info('按页加载pdf')
     loader = PyPDFLoader(file_path)
     docs = loader.load()
     return docs
@@ -346,6 +345,11 @@ def create_langchain_embedding_db(
 
 
 def create_test_data():
+    """
+    文档向量化示例
+    Returns:
+
+    """
     demo_docx = './医疗器械经营质量管理规范.docx'
     demo_pdf = './机器学习常用数据集.pdf'
     vector_store = create_langchain_embedding_db()
@@ -361,22 +365,38 @@ def create_test_data():
     #     print(f"* [SIM={score:3f}] {res.page_content[:100]} [{res.metadata}]")
 
 
-if __name__ == '__main__':
-    import os
+def create_test_data2():
+    """
+    文档向量化示例2
+    Returns:
+
+    """
+    # demo_docx = './医疗器械经营质量管理规范.docx'
+    demo_pdf = './机器学习常用数据集.pdf'
+    vector_store = create_langchain_embedding_db()
+    # for res, score in query_vector_store(vector_store, "Will it be hot tomorrow?", ):
+    #     print(f"* [SIM={score:3f}] {res.page_content} [{res.metadata}]")
+    # res_text_splits = load_documents(demo_docx)
+    # ids = add_document(vector_store, res_text_splits)
+    # for res, score in query_vector_store(vector_store, "医疗器械经营质量管理规范,职责与制度", ):
+    #     print(f"* [SIM={score:3f}] {res.page_content[:10]} [{res.metadata}]")
+    # pdf_docs = load_pdf(demo_pdf)
+    pdf_docs = load_pdf_page(demo_pdf)
+    ids2 = add_document(vector_store, pdf_docs)
+    # for res, score in query_vector_store(vector_store, "图像分类领域数据集"):
+    #     print(f"* [SIM={score:3f}] {res.page_content[:100]} [{res.metadata}]")
 
 
-    # os.environ["HTTP_PROXY"] = 'http://127.0.0.1:58591'
-    # os.environ["HTTPS_PROXY"] = 'http://127.0.0.1:58591'
-    os.environ["all_proxy"] = ''
-    os.environ["ALL_PROXY"] = ''
-    print('ok start of st')
-
+def query_doc_demo():
+    """
+    文档查询示例
+    Returns:
+    """
     vector_store = create_langchain_embedding_db()
     llm = create_langchain_ollama_llm()
     q = "护眼液OEM"
     sources = []
     for chunk in rag_chat_stream(q, vector_store, llm):
-
         a = chunk.get('answer')
         if a:
             print(a, end='', flush=True)
@@ -386,3 +406,14 @@ if __name__ == '__main__':
             for doc in c:
                 source = doc.metadata['source']
                 sources.append(source)
+
+
+if __name__ == '__main__':
+    import os
+
+    # os.environ["HTTP_PROXY"] = 'http://127.0.0.1:58591'
+    # os.environ["HTTPS_PROXY"] = 'http://127.0.0.1:58591'
+    os.environ["all_proxy"] = ''
+    os.environ["ALL_PROXY"] = ''
+    print('rag document start')
+    create_test_data2()
