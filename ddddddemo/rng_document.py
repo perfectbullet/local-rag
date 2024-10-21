@@ -194,9 +194,7 @@ def load_documents(doc_path: str):
     load a document
     Args:
         doc_path:
-
     Returns:
-
     """
     # 加载Word文档并提取文本
     # loader = UnstructuredWordDocumentLoader("./short.docx")

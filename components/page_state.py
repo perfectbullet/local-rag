@@ -34,6 +34,8 @@ def set_initial_state():
     if "knowledge_base_list" not in st.session_state:
         logger.info('init knowledge base')
         get_knowledge_base()
+    if 'selected_knowledge_base' not in st.session_state:
+        st.session_state["selected_knowledge_base"] = st.session_state["knowledge_base_list"][0]
 
     if "collection_name" not in st.session_state:
         st.session_state["collection_name"] = None

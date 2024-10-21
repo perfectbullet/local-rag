@@ -3,9 +3,10 @@ import os
 import sqlite3
 import time
 
+import pandas as pd
 import streamlit as st
 
-from ddddddemo.rng_document import create_langchain_embedding_db, load_pdf, load_pdf_page, add_document
+from ddddddemo.rng_document import create_langchain_embedding_db, load_pdf_page, add_document, load_documents
 from utils.helpers import save_uploaded_file
 from utils.logs import logger
 
@@ -44,6 +45,7 @@ def rag_pipeline(uploaded_files: list = None):
             cur.execute(sql_text_q, (file_name, collection_zh_name))
             # 获取查询结果
             fetrest = cur.fetchone()
+
             logger.info('fetrest is {}'.format(fetrest))
 
             if fetrest:
@@ -99,6 +101,23 @@ def rag_pipeline(uploaded_files: list = None):
             )
             db_conn.commit()
             st.info("{}上传到: {}".format(fname, collection_zh_name))
+        elif fname.endswith('docx') or fname.endswith('doc'):
+            logger.info('file_path {}', file_path)
+            word_docs = load_documents(file_path)
+            ok_word_docs = []
+            for doc in word_docs:
+                doc.metadata['filetype'] = 'docx'
+                if len(doc.page_content) < 10:
+                    continue
+                ok_word_docs.append(doc)
+            logger.info('ok_word_docs  is {}', ok_word_docs[:1])
+            ids = add_document(vector_store, ok_word_docs)
+            db_conn.execute(
+                "INSERT INTO file_list (filename, filetype, knowledge_base, embedded) VALUES (?, ?, ?, ?)",
+                (fname, 'doc', collection_zh_name, True)
+            )
+            db_conn.commit()
+            st.info("{}上传到: {}".format(fname, collection_zh_name))
     db_conn.close()
     st.info("✔️ 上传完成")
 
@@ -122,4 +141,4 @@ def langchain_local_files():
             time.sleep(3)
             rag_pipeline(uploaded_files)
             # Display errors (if any) or proceed
-            st.info("上传完成")
+            # st.info("上传完成")
