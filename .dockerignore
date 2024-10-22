@@ -14,5 +14,9 @@ logo.*
 *.sample
 .env*
 Dockerfile
-docker-compose.yml
+docker-compose*
 *.log
+.ipynb_checkpoints
+vector_db
+embedding_models
+vector_db
