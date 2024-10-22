@@ -20,3 +20,4 @@ docker-compose*
 vector_db
 embedding_models
 vector_db
+wheel_packages.zip

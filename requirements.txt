@@ -9,3 +9,4 @@ streamlit-javascript
 pypdf
 docx2txt
 jupyterlab
+streamlit-modal
