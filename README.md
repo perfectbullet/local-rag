@@ -28,6 +28,10 @@ Learn More:
 ```shell
 pip install -qU "langchain-chroma>=0.1.2"
 pip install -U langchain-ollama
+
+
+pip install -qU langchain_community pypdf
+pip install --upgrade --quiet  docx2txt
 ```
 
 
