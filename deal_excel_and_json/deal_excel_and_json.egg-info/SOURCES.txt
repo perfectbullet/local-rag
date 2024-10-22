@@ -2,6 +2,5 @@ setup.py
 deal_excel_and_json.egg-info/PKG-INFO
 deal_excel_and_json.egg-info/SOURCES.txt
 deal_excel_and_json.egg-info/dependency_links.txt
-deal_excel_and_json.egg-info/requires.txt
 deal_excel_and_json.egg-info/top_level.txt
 deal_excel_and_json.egg-info/zip-safe

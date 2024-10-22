@@ -1,13 +1,21 @@
 version: '3'
 services:
   local-rag:
+    build:
+      dockerfile: Dockerfile
+      context: .
     container_name: local-rag
-    image: jonfairbanks/local-rag
+    image: jonfairbanks/local-rag-v2
     restart: unless-stopped
     environment:
-      - TZ=America/Los_Angeles
+      - TZ=Asia/Shanghai
     ports:
       - '8501:8501/tcp'
+      - '8502:8502/tcp'
+      - '8888:8888/tcp'
+      - '8889:8889/tcp'
+    volumes:
+      - ./.:/home/appuser/
     deploy:
         resources:
           reservations:
