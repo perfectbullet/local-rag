@@ -1,3 +1,6 @@
+import json
+import os
+
 import streamlit as st
 from langchain_community.vectorstores import Chroma
 
@@ -65,7 +68,7 @@ def langchain_chat_stream(q, st):
                 if not doc.metadata.get('filetype'):
                     # 没有文件类型
                     source = doc.metadata['source']
-                    sources.append(source)
+                    sources.append(json.loads(source))
                 else:
                     source_file = doc.metadata['source']
                     filetype = doc.metadata['filetype']
@@ -73,7 +76,8 @@ def langchain_chat_stream(q, st):
                     new_source = {
                         'source': source_file,
                         'filetype': filetype,
-                        'page': page
+                        'page': page,
+                        'name': os.path.basename(source_file),
                     }
                     sources.append(new_source)
 
