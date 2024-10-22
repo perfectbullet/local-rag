@@ -17,7 +17,7 @@ def chatbox():
             if prompt := st.chat_input("请输入你要搜索的关键词"):
                 # Prevent submission if Ollama endpoint is not set
                 logger.info('prompt is {}', prompt)
-                logger.info('query_engine is {}', st.session_state["query_engine"])
+                st.chat_input(prompt)
                 # Generate llama-index stream with user input
                 with st.container(border=True):
                     with st.chat_message("assistant"):
@@ -46,7 +46,13 @@ def chatbox():
                                         source_txt += '\n\n**{}**\n\n{}'.format(sc['name'], image_markdown_url)
                                         source_placeholder.markdown(source_txt)
                                     else:
-                                        source_txt += '\n\n**{}**\n\n'.format(sc['name'])
+                                        file_name = sc['name']
+                                        new_markdown_url = '({}pdf_and_doc/{})'.format(base_url, file_name)
+                                        # file_markdown_url = '[{}]({}{}/{})'.format(
+                                        #     file_name, base_url, 'pdf_and_doc', file_name)
+                                        logger.info('file_markdown_url {}', new_markdown_url)
+                                        source_txt += '\n\n[**{}**]{}\n\n'.format(file_name, new_markdown_url)
+                                        logger.info('source_txt {}', source_txt)
                                         source_placeholder.markdown(source_txt)
                             else:
                                 response = st.write_stream(
@@ -64,6 +70,7 @@ def chatbox():
                     for msg in st.session_state["messages"]:
                         # log.info('msg is {}'.format(msg))
                         st.chat_message(msg["role"]).write(msg["content"])
+
         # st.caption('引用文档')
         # 这里我们设定一个高度为300的容器
         # with st.container(height=200):
