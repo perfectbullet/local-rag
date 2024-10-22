@@ -37,17 +37,16 @@ def chatbox():
                                     output_placeholder.markdown(response)
                                 source_txt = "### 参考文档如下："
                                 for sc in st.session_state["sources"]:
-                                    sc_dict = json.loads(sc)
-                                    logger.info('sc is {}', sc_dict)
+                                    logger.info('sc is {}', sc)
                                     # ![local-rag-demo](http://localhost:8501/app/static/oktest_image_url//1446441727800.jpg)
                                     base_url = 'http://localhost:8501/app/static/'
-                                    image_path = sc_dict.get('image_path', '')
+                                    image_path = sc.get('image_path', '')
                                     if image_path:
                                         image_markdown_url = '![{}]({}{})'.format(os.path.basename(image_path), base_url, image_path)
-                                        source_txt += '\n\n**{}**\n\n{}'.format(sc_dict['name'], image_markdown_url)
+                                        source_txt += '\n\n**{}**\n\n{}'.format(sc['name'], image_markdown_url)
                                         source_placeholder.markdown(source_txt)
                                     else:
-                                        source_txt += '\n\n**{}**\n\n{}'.format(sc_dict['name'], 'no image found')
+                                        source_txt += '\n\n**{}**\n\n'.format(sc['name'])
                                         source_placeholder.markdown(source_txt)
                             else:
                                 response = st.write_stream(
