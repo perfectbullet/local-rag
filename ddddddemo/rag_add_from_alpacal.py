@@ -6,7 +6,10 @@ from langchain_core.documents import Document
 
 from deal_excel_and_json import read_json
 
-from ddddddemo.rng_document import create_langchain_embedding_db, add_document, query_vector_store
+try:
+    from ddddddemo.rng_document import create_langchain_embedding_db, add_document, query_vector_store
+except:
+    from rng_document import create_langchain_embedding_db, add_document, query_vector_store
 
 
 def read_excel(excel_file) -> Tuple[List, List]:
@@ -47,9 +50,15 @@ def add_data_from_json():
     Returns:
 
     """
+    collection_name = 'alpaca_merge_medical_mechain'
+    ollama_base_url = 'http://125.69.16.175:11434'
     file_name = 'ddddddemo/oktest_image_url_local_image.json'
     recovered_json = read_json(file_name)
-    vector_store = create_langchain_embedding_db(collection_name='oktest_image_url_local_image')
+    vector_store = create_langchain_embedding_db(
+        ollama_base_url=ollama_base_url,
+        embedding_model="znbang/bge:large-zh-v1.5-f32",
+        collection_name=collection_name
+    )
     doc_list = []
     seen_urls = set()
     for data in recovered_json:
@@ -68,8 +77,13 @@ def add_data_from_json():
         )
         doc_list.append(doc)
     print('len of doc_list ', len(doc_list))
-    # print('doc_list is {}'.format(doc_list[:3]))
-    ids = add_document(vector_store, doc_list)
+    print('doc_list is {}'.format(doc_list[:3]))
+
+    step = 50
+    l = len(doc_list)
+    doc_list_slice = [doc_list[i:i + step] for i in range(0, l, step)]
+    for lslice in doc_list_slice:
+        ids = add_document(vector_store, lslice)
     # 正义堂祛红血丝护眼液OEM贴牌代工
     # 三申卧式圆形压力蒸汽灭菌器YX450W双温度显示和控制
     for res, score in query_vector_store(vector_store, "脂肪吸引器", ):

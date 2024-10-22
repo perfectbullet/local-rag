@@ -50,11 +50,14 @@ def sources():
             logger.info('sql_text_q is {}'.format(sql_text_q))
             cur.execute(sql_text_q, (collection_zh_name,))
             fetch_all_files = cur.fetchall()
-            logger.info('fetch_all_files is {}'.format(fetch_all_files))
-            df = pd.DataFrame(fetch_all_files)
-            # 添加表头
-            df.columns = ['文件名', '文件类型', '专业领域模型名称']
-            st.table(df)
+            if fetch_all_files:
+                logger.info('fetch_all_files is {}'.format(fetch_all_files))
+                df = pd.DataFrame(fetch_all_files)
+                # 添加表头
+                df.columns = ['文件名', '文件类型', '专业领域模型名称']
+                st.table(df)
+            else:
+                st.subheader('还未导入数据')
 
     # databae modal
     data_base_modal = Modal(

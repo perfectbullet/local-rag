@@ -5,6 +5,7 @@ loguru==0.7.2
 langchain-chroma>=0.1.2
 langchain-ollama
 langchain_community
+streamlit-javascript
 pypdf
 docx2txt
 jupyterlab

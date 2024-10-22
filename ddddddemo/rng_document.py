@@ -181,7 +181,6 @@ def add_document(vector_store: Chroma, documents: List[Document]):
     Args:
         vector_store:
         documents:
-
     Returns:
     """
     ids = vector_store.add_documents(documents)

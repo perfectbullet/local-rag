@@ -19,6 +19,7 @@ RUN pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/we
 RUN pip install -r requirements.txt
 RUN pip install -e ./deal_excel_and_json
 
+RUN pip install streamlit-modal
 # Expose the Streamlit port
 EXPOSE 8501 8502 8889 8888
 
@@ -26,4 +27,5 @@ EXPOSE 8501 8502 8889 8888
 HEALTHCHECK CMD curl --fail http://localhost:8501/_stcore/health
 
 # Run the application
+ENTRYPOINT []
 CMD ["python", "-m", "streamlit", "run", "main.py", "--server.port=8501", "--server.address=0.0.0.0"]
