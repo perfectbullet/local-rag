@@ -11,7 +11,6 @@ zj_ollama = "http://localhost:11434"
 
 
 def set_initial_state():
-
     if 'data_base' not in st.session_state:
         data_base_name = 'local_rag.db'
         conn = sqlite3.connect(data_base_name)
@@ -26,6 +25,14 @@ def set_initial_state():
             embedded BOOLEAN NOT NULL
         )
         ''')
+        cur.execute('''
+                CREATE TABLE IF NOT EXISTS session_state (
+                    id INTEGER PRIMARY KEY,
+                    state_name TEXT UNIQUE NOT NULL,
+                    state_value TEXT NOT NULL
+                )
+                ''')
+        conn.commit()
         st.session_state["data_base_name"] = data_base_name
 
     ###########
@@ -35,7 +42,22 @@ def set_initial_state():
         logger.info('init knowledge base')
         get_knowledge_base()
     if 'selected_knowledge_base' not in st.session_state:
-        st.session_state["selected_knowledge_base"] = st.session_state["knowledge_base_list"][0]
+        logger.info('selected_knowledge_base not in st.session_state')
+        data_base_name = st.session_state['data_base_name']
+        # 数据库对象不能跨线程使用
+        db_conn = sqlite3.connect(data_base_name)
+        cur = db_conn.cursor()
+        # 文件名称和知识库联合不能重复
+        sql_text_q = "SELECT state_name,state_value FROM session_state WHERE state_name=?"
+        logger.info('sql_text_q is {}'.format(sql_text_q))
+        cur.execute(sql_text_q, ('selected_knowledge_base', ))
+        # 获取查询结果
+        st_state = cur.fetchone()
+        logger.info('fetrest is {}'.format(st_state))
+        if st_state:
+            st.session_state["selected_knowledge_base"] = st_state[1]
+        else:
+            st.session_state["selected_knowledge_base"] = st.session_state["knowledge_base_list"][0]
 
     if "collection_name" not in st.session_state:
         st.session_state["collection_name"] = None
@@ -67,6 +89,10 @@ def set_initial_state():
             if "qwen2.5:14b" in st.session_state["ollama_models"]:
                 st.session_state["selected_model"] = (
                     "qwen2.5:14b"  # Default to qwen2.5:14b on initial load
+                )
+            elif "qwen2.5:latest" in st.session_state["ollama_models"]:
+                st.session_state["selected_model"] = (
+                    "qwen2.5:latest"
                 )
             elif "llama3:8b" in st.session_state["ollama_models"]:
                 st.session_state["selected_model"] = (

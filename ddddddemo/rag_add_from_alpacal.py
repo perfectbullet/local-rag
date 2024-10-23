@@ -51,7 +51,8 @@ def add_data_from_json():
 
     """
     collection_name = 'alpaca_merge_medical_mechain'
-    ollama_base_url = 'http://125.69.16.175:11434'
+    # ollama_base_url = 'http://125.69.16.175:11434'
+    ollama_base_url = ''
     file_name = 'ddddddemo/oktest_image_url_local_image.json'
     recovered_json = read_json(file_name)
     vector_store = create_langchain_embedding_db(

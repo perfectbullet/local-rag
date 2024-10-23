@@ -1,12 +1,10 @@
 import json
+import sqlite3
 
 import streamlit as st
-
 import utils.util_ollama as ollama
-
 from datetime import datetime
 
-from utils import helpers
 from utils.logs import logger
 
 
@@ -29,30 +27,6 @@ def settings():
                 disabled=len(st.session_state["ollama_models"]) == 0,
                 placeholder="Select Model" if len(st.session_state["ollama_models"]) > 0 else "No Models Available",
             )
-            # st.button("刷新", on_click=ollama.get_models)
-            # if st.session_state["advanced"] == True:
-            #     st.select_slider(
-            #         "Top K",
-            #         options=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-            #         help="The number of most similar documents to retrieve in response to a query.",
-            #         value=st.session_state["top_k"],
-            #         key="top_k",
-            #     )
-            #     st.selectbox(
-            #         "Chat Mode",
-            #         (
-            #             "compact",
-            #             "refine",
-            #             "tree_summarize",
-            #             "simple_summarize",
-            #             "accumulate",
-            #             "compact_accumulate",
-            #         ),
-            #         help="Sets the [Llama Index Query Engine chat mode](https://github.com/run-llama/llama_index/blob/main/docs/module_guides/deploying/query_engine/response_modes.md) used when creating the Query Engine. Default: `compact`.",
-            #         key="chat_mode",
-            #         disabled=True,
-            #     )
-            #     st.write("")
 
         knowledge_base_settings = st.container(border=True)
         with knowledge_base_settings:
@@ -62,16 +36,16 @@ def settings():
                 key="selected_knowledge_base",
             )
             logger.info('selected_knowledge_base is {}', st.session_state["selected_knowledge_base"])
+            data_base_name = st.session_state['data_base_name']
+            db_conn = sqlite3.connect(data_base_name)
+            # INSERT OR REPLACE INTO users (id, name) VALUES (1, 'John');
+            db_conn.execute(
+                "INSERT OR REPLACE INTO session_state (state_name, state_value) VALUES (?, ?)",
+                ('selected_knowledge_base', knowledge_base)
+            )
+            db_conn.commit()
             logger.info('knowledge_base is {}', knowledge_base)
-            # st.button(
-            #     "刷新知识库",
-            #     on_click=helpers.get_knowledge_base,
-            # )
 
-        # st.subheader(
-        #     "嵌入(Embeddings)",
-        #     help="嵌入是数据的数值表示，对于处理文件时的文档聚类和相似性检测等任务很有用，因为它们对语义含义进行编码以实现有效的操作和检索。",
-        # )
         embedding_settings = st.container(border=True)
         with embedding_settings:
             embedding_model = st.selectbox(

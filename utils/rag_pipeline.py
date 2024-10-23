@@ -8,7 +8,7 @@ import streamlit as st
 import utils.helpers as func
 import utils.util_ollama as ollama
 import utils.llama_index as llama_index
-import utils.logs as logs
+from utils.logs import logger
 
 
 def rag_pipeline(uploaded_files: list = None):
@@ -29,7 +29,7 @@ def rag_pipeline(uploaded_files: list = None):
         This function initiates a chat with context using the Llama-Index library and the Ollama language model. It takes one optional parameter, `uploaded_files`, which should be a list of files to be processed. If no files are provided, the function will load files from the current working directory. The function returns an iterable yielding successive chunks of conversation from the Ollama model with context. If there is an error retrieving answers from the Ollama model or creating the service context, the function raises an exception.
 
     Context:
-        - logs.log: A logger for logging events related to this function.
+        - logger: A logger for logging events related to this function.
 
     Side Effects:
         - Creates a service context using the provided Ollama model and embedding file.
@@ -67,7 +67,7 @@ def rag_pipeline(uploaded_files: list = None):
         # resp = llm.complete("Hello!")
         # print(resp)
     except Exception as err:
-        logs.log.error(f"Failed to setup LLM: {str(err)}")
+        logger.error(f"Failed to setup LLM: {str(err)}")
         error = err
         st.exception(error)
         st.stop()
@@ -88,7 +88,7 @@ def rag_pipeline(uploaded_files: list = None):
         )
         st.caption("✔️ Embedding Model Created")
     except Exception as err:
-        logs.log.error(f"Setting up Embedding Model failed: {str(err)}")
+        logger.error(f"Setting up Embedding Model failed: {str(err)}")
         error = err
         st.exception(error)
         st.stop()
@@ -102,7 +102,7 @@ def rag_pipeline(uploaded_files: list = None):
         st.session_state["documents"] is not None
         and len(st.session_state["documents"]) > 0
     ):
-        logs.log.info("Documents are already available; skipping document loading")
+        logger.info("Documents are already available; skipping document loading")
         st.caption("✔️ Processed File Data")
     else:
         try:
@@ -111,7 +111,7 @@ def rag_pipeline(uploaded_files: list = None):
             st.session_state["documents"] = documents
             st.caption("✔️ Data Processed")
         except Exception as err:
-            logs.log.error(f"Document Load Error: {str(err)}")
+            logger.error(f"Document Load Error: {str(err)}")
             error = err
             st.exception(error)
             st.stop()
@@ -126,7 +126,7 @@ def rag_pipeline(uploaded_files: list = None):
         )
         st.caption("✔️ Created File Index")
     except Exception as err:
-        logs.log.error(f"Index Creation Error: {str(err)}")
+        logger.error(f"Index Creation Error: {str(err)}")
         error = err
         st.exception(error)
         st.stop()
@@ -141,7 +141,7 @@ def rag_pipeline(uploaded_files: list = None):
             shutil.rmtree(save_dir)
             st.caption("✔️ Removed Temp Files")
         except Exception as err:
-            logs.log.warning(
+            logger.warning(
                 f"Unable to delete data files, you may want to clean-up manually: {str(err)}"
             )
             pass

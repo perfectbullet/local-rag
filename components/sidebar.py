@@ -6,7 +6,6 @@ from components.tabs.settings import settings
 
 
 def sidebar():
-
     with st.sidebar:
         with st.container(border=True):
             sources()

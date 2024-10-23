@@ -11,8 +11,8 @@ from utils.logs import logger
 
 
 def get_langchain_embedding_db(
-        ollama_base_url='http://127.0.0.1:11434',
-        embedding_model="znbang/bge:large-zh-v1.5-f32",
+        ollama_base_url=None,
+        embedding_model=None,
         collection_name=None
 ) -> Chroma:
 
@@ -28,11 +28,14 @@ def get_langchain_embedding_db(
     return vector_store
 
 
-def get_langchain_ollama_llm() -> ChatOllama:
+def get_langchain_ollama_llm(
+        model=None,
+        base_url=None,
+) -> ChatOllama:
     llm = st.session_state.get('llm')
     if not llm:
-        print('create llm')
-        llm = create_langchain_ollama_llm()
+        logger.info('create llm, model is {}, base_url is {}', model, base_url)
+        llm = create_langchain_ollama_llm(model, base_url)
         st.session_state['llm'] = llm
     return llm
 
@@ -49,6 +52,8 @@ def langchain_chat_stream(q, st):
     collection_zh_name = st.session_state.get("selected_knowledge_base", "")
     embedding_model = st.session_state["embedding_model"]
     ollama_endpoint = st.session_state["ollama_endpoint"]
+    selected_model = st.session_state["selected_model"]
+
     collection_name = ''
     for kb in st.session_state["knowledge_base_config"]:
         if kb['knowledge_base_name'] == collection_zh_name:
@@ -59,7 +64,7 @@ def langchain_chat_stream(q, st):
         embedding_model=embedding_model,
         collection_name=collection_name
     )
-    llm = get_langchain_ollama_llm()
+    llm = get_langchain_ollama_llm(base_url=ollama_endpoint, model=selected_model)
     for chunk in rag_chat_stream(q, vector_store, llm):
         if a := chunk.get('answer'):
             yield a

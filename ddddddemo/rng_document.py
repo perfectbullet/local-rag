@@ -256,8 +256,8 @@ def load_pdf_page(file_path):
 
 
 def create_langchain_ollama_llm(
-        model="qwen2.5:14b",
-        base_url="http://125.69.16.175:11434",
+        model=None,
+        base_url=None,
 ) -> ChatOllama | None:
     """
     Create an instance of the Ollama language model.
@@ -322,8 +322,8 @@ def rag_chat_stream(
 
 
 def create_langchain_embedding_db(
-        ollama_base_url='http://127.0.0.1:11434',
-        embedding_model="znbang/bge:large-zh-v1.5-f32",
+        ollama_base_url=None,
+        embedding_model=None,
         collection_name=None
 ):
     """

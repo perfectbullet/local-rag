@@ -18,8 +18,5 @@ set_initial_state()
 set_page_config()
 # set_page_header()
 
-### Sidebar
-# sidebar()
-
 ### Chat Box
 chatbox()

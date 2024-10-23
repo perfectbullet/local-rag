@@ -45,7 +45,6 @@ def rag_pipeline(uploaded_files: list = None):
             cur.execute(sql_text_q, (file_name, collection_zh_name))
             # 获取查询结果
             fetrest = cur.fetchone()
-
             logger.info('fetrest is {}'.format(fetrest))
 
             if fetrest:
@@ -137,8 +136,4 @@ def langchain_local_files():
         st.session_state["file_list"] = uploaded_files
 
         with st.spinner("处理中..."):
-            # Initiate the RAG pipeline, providing documents to be saved on disk if necessary
-            time.sleep(3)
             rag_pipeline(uploaded_files)
-            # Display errors (if any) or proceed
-            # st.info("上传完成")
