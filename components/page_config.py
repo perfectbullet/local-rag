@@ -2,12 +2,16 @@ import streamlit as st
 from streamlit_javascript import st_javascript
 
 from components.sidebar import sidebar
-
+from utils.logs import logger
 
 def set_page_config():
-    sidebar_state = st.session_state["sidebar_state"]
-    print('sidebar_state is {}'.format(sidebar_state))
-
+    query_params = st.query_params
+    logger.info('query_params is {}', query_params)
+    if query_params.get('sidebar_state', '') == 'collapsed':
+        # http://localhost:8503/?sidebar_state=collapsed&help=no-help
+        sidebar_state = query_params.get('sidebar_state', '')
+    else:
+        sidebar_state = st.session_state["sidebar_state"]
     st.set_page_config(
         # page_title="Local RAG",
         page_title="检索增强",
