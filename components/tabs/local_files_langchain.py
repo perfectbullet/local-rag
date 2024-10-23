@@ -29,12 +29,12 @@ def rag_pipeline(uploaded_files: list = None):
     # 当前使用的领域知识库
     collection_zh_name = st.session_state.get("selected_knowledge_base", "")
     new_saved_files = []
+
+    save_dir = "./static/pdf_and_doc"
+    os.makedirs(save_dir, exist_ok=True)
     # 1. 保存文件到磁盘
     if uploaded_files is not None:
-        save_dir =  "./data"
-        os.makedirs(save_dir, exist_ok=True)
         logger.info('save dir is {}'.format(save_dir))
-
         for uploaded_file in uploaded_files:
             file_name = uploaded_file.name
             # 查询已有的
@@ -46,7 +46,6 @@ def rag_pipeline(uploaded_files: list = None):
             # 获取查询结果
             fetrest = cur.fetchone()
             logger.info('fetrest is {}'.format(fetrest))
-
             if fetrest:
                 st.info(f"{file_name} 已上传过")
                 continue
