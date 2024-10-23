@@ -30,6 +30,7 @@ def chatbox():
                                 # print(chunk.choices[0].delta.content, end="")
                                 output_placeholder.markdown(response)
                             source_txt = "### 参考文档如下："
+                            seen_file_names = set()
                             for sc in st.session_state["sources"]:
                                 logger.info('sc is {}', sc)
                                 # ![local-rag-demo](http://localhost:8501/app/static/oktest_image_url//1446441727800.jpg)
@@ -41,6 +42,9 @@ def chatbox():
                                     source_placeholder.markdown(source_txt)
                                 else:
                                     file_name = sc['name']
+                                    if file_name in seen_file_names:
+                                        continue
+                                    seen_file_names.add(file_name)
                                     new_markdown_url = '({}pdf_and_doc/{})'.format(base_url, file_name)
                                     logger.info('file_markdown_url {}', new_markdown_url)
                                     source_txt += '\n\n[**{}**]{}\n\n'.format(file_name, new_markdown_url)

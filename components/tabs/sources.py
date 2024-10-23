@@ -59,33 +59,33 @@ def sources():
             else:
                 st.subheader('还未导入数据')
 
-    # databae modal
-    data_base_modal = Modal(
-        "💻 &nbsp;",
-        key="data_base_modal",
-        # Optional
-        padding=20,  # default value
-        max_width=744  # default value
-    )
-    data_base_modal_button = st.button("🗂️ &nbsp;**仓库数据**")
-    if data_base_modal_button:
-        data_base_modal.open()
-    if data_base_modal.is_open():
-        with data_base_modal.container():
-            # with st.expander("🗂️ &nbsp;**仓库数据**", expanded=True):
-            github_repo()
-
-    # web modal
-    web_modal = Modal(
-        "🌐 &nbsp;",
-        key="web_modal",
-        # Optional
-        padding=20,  # default value
-        max_width=744  # default value
-    )
-    data_base_modal_button = st.button("🌐 &nbsp; **网页数据**")
-    if data_base_modal_button:
-        web_modal.open()
-    if web_modal.is_open():
-        with web_modal.container():
-            website()
+    # # databae modal
+    # data_base_modal = Modal(
+    #     "💻 &nbsp;",
+    #     key="data_base_modal",
+    #     # Optional
+    #     padding=20,  # default value
+    #     max_width=744  # default value
+    # )
+    # data_base_modal_button = st.button("🗂️ &nbsp;**仓库数据**")
+    # if data_base_modal_button:
+    #     data_base_modal.open()
+    # if data_base_modal.is_open():
+    #     with data_base_modal.container():
+    #         # with st.expander("🗂️ &nbsp;**仓库数据**", expanded=True):
+    #         github_repo()
+    #
+    # # web modal
+    # web_modal = Modal(
+    #     "🌐 &nbsp;",
+    #     key="web_modal",
+    #     # Optional
+    #     padding=20,  # default value
+    #     max_width=744  # default value
+    # )
+    # data_base_modal_button = st.button("🌐 &nbsp; **网页数据**")
+    # if data_base_modal_button:
+    #     web_modal.open()
+    # if web_modal.is_open():
+    #     with web_modal.container():
+    #         website()
