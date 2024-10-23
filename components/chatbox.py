@@ -52,10 +52,14 @@ def chatbox():
                                         continue
                                     seen_file_names.add(file_name)
                                     new_markdown_url = '({}pdf_and_doc/{})'.format(base_url, file_name)
-                                    logger.info('file_markdown_url {}', new_markdown_url)
-                                    source_txt += '\n\n[**{}**]{}\n\n'.format(file_name, new_markdown_url)
-                                    logger.info('source_txt {}', source_txt)
-                                    source_placeholder.markdown(source_txt)
+                                    # logger.info('file_markdown_url {}', new_markdown_url)
+                                    # source_txt += '\n\n[**{}**]{}\n\n'.format(file_name, new_markdown_url)
+                                    # logger.info('source_txt {}', source_txt)
+                                    # source_placeholder.markdown(source_txt)
+                                    a_target = '''<a href="{}" download="{}">{}</a>'''.format(new_markdown_url,
+                                                                                              file_name, file_name)
+                                    source_placeholder.html(a_target)
+
                 # Add the user input to messages state
                 st.session_state["messages"].append({"role": "user", "content": prompt})
                 # Add the final response to messages state
