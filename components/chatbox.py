@@ -36,6 +36,7 @@ def chatbox():
                                 # print(chunk.choices[0].delta.content, end="")
                                 output_placeholder.markdown(response)
                             source_txt = "### 参考文档如下："
+                            html_source = '''<h3>参考文档如下：</h3>'''
                             seen_file_names = set()
                             for sc in st.session_state["sources"]:
                                 logger.info('sc is {}', sc)
@@ -56,9 +57,9 @@ def chatbox():
                                     # source_txt += '\n\n[**{}**]{}\n\n'.format(file_name, new_markdown_url)
                                     # logger.info('source_txt {}', source_txt)
                                     # source_placeholder.markdown(source_txt)
-                                    a_target = '''<a href="{}" download="{}">{}</a>'''.format(new_markdown_url,
-                                                                                              file_name, file_name)
-                                    source_placeholder.html(a_target)
+                                    a_target = '''<a href="{}" download="{}">{}</a><br/>'''.format(new_markdown_url, file_name, file_name)
+                                    html_source += a_target
+                                    source_placeholder.html(html_source)
 
                 # Add the user input to messages state
                 st.session_state["messages"].append({"role": "user", "content": prompt})
