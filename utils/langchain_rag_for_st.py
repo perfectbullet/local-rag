@@ -6,7 +6,7 @@ from langchain_community.vectorstores import Chroma
 
 from langchain_ollama import ChatOllama
 
-from ddddddemo.rng_document import create_langchain_embedding_db, create_langchain_ollama_llm, rag_chat_stream
+from rag_document.rng_document import create_langchain_embedding_db, create_langchain_ollama_llm, rag_chat_stream
 from utils.logs import logger
 
 

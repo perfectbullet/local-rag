@@ -6,7 +6,7 @@ import time
 import pandas as pd
 import streamlit as st
 
-from ddddddemo.rng_document import create_langchain_embedding_db, load_pdf_page, add_document, load_documents
+from rag_document.rng_document import create_langchain_embedding_db, load_pdf_page, add_document, load_documents
 from utils.helpers import save_uploaded_file
 from utils.logs import logger
 

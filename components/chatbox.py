@@ -2,7 +2,7 @@ import os.path
 
 import streamlit as st
 
-from ddddddemo.rng_document import query_keywords_in_file
+from rag_document.rng_document import query_keywords_in_file
 from utils.langchain_rag_for_st import langchain_chat_stream
 from utils.logs import logger
 from config import STATIC_URL

@@ -7,7 +7,7 @@ from langchain_core.documents import Document
 from deal_excel_and_json import read_json
 
 try:
-    from ddddddemo.rng_document import create_langchain_embedding_db, add_document, query_vector_store
+    from rag_document.rng_document import create_langchain_embedding_db, add_document, query_vector_store
 except:
     from rng_document import create_langchain_embedding_db, add_document, query_vector_store
 
