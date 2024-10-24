@@ -17,6 +17,7 @@ from langchain_ollama import OllamaEmbeddings
 # Directory to persist the collection
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from loguru import logger
+from langchain_core.prompts import PromptTemplate
 
 langchain.verbose = True
 
@@ -404,13 +405,62 @@ def query_doc_demo():
                 source = doc.metadata['source']
                 sources.append(source)
 
+key_words_system_template = '''
+在以下文本中：
+{text}
+查找以下列表中的词语：
+{keywords}
+将查找到的词语按JSON格式输出。
+如果没查找到，就返回空JSON。
+'''
+def query_keywords(keywords, text, llm: ChatOllama):
+    from langchain.output_parsers.json import SimpleJsonOutputParser
+
+    json_prompt = PromptTemplate.from_template(
+        key_words_system_template
+    )
+    json_parser = SimpleJsonOutputParser()
+    json_chain = json_prompt | llm | json_parser
+    res = list(json_chain.invoke({"keywords": keywords, 'text': text}))
+    print(res)
+
+
+def query_keywords_in_file(file_path, key_words=None):
+    '''
+    find key words in file
+    Args:
+        key_words:
+        file_path:
+    Returns:
+    '''
+    if key_words is None:
+        key_words = []
+        with open('./key_words') as f:
+            for k in f:
+                k = k.strip()
+                if k:
+                    key_words.append(k)
+    content = readDocx(file_path)
+    seen_key_words = []
+    for key_wd in key_words:
+        if key_wd in content:
+            seen_key_words.append(key_wd)
+            continue
+    return seen_key_words
+
 
 if __name__ == '__main__':
     import os
-
+    from utils.read_dox2txt import readDocx
     # os.environ["HTTP_PROXY"] = 'http://127.0.0.1:58591'
     # os.environ["HTTPS_PROXY"] = 'http://127.0.0.1:58591'
     os.environ["all_proxy"] = ''
     os.environ["ALL_PROXY"] = ''
     print('rag document start')
-    create_test_data2()
+    # create_test_data2()
+    ollama_base_url = 'http://125.69.16.175:11434'
+    model_name = 'qwen2.5:14b'
+    # llm = create_langchain_ollama_llm(base_url=ollama_base_url, model=model_name)
+    key_words = ['辅助生殖器械', '雾化设备']
+    seen_key_words = query_keywords_in_file('./test_files/第三批实施医疗器械唯一标识的产品目录.docx')
+    print(seen_key_words)
