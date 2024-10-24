@@ -5,9 +5,7 @@ from utils.logs import logger
 from utils.helpers import get_knowledge_base
 
 from utils.util_ollama import get_models, get_embedding_models
-
-gx_ollama = 'http://125.69.16.175:11434'
-zj_ollama = "http://localhost:11434"
+from config import OLLAMA_BASE_URL
 
 
 def set_initial_state():
@@ -77,7 +75,7 @@ def set_initial_state():
         st.session_state["sidebar_state"] = "expanded"
 
     if "ollama_endpoint" not in st.session_state:
-        st.session_state["ollama_endpoint"] = gx_ollama
+        st.session_state["ollama_endpoint"] = OLLAMA_BASE_URL
 
     if "embedding_models" not in st.session_state:
         embedding_models = get_embedding_models()
