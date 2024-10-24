@@ -1,8 +1,20 @@
 from docx import Document
+from pypdf import PdfReader
+from pdfminer.high_level import extract_text as fallback_text_extraction
 
 
+def read_pdf(file_path):
+    text = ""
+    try:
+        reader = PdfReader(file_path)
+        for page in reader.pages:
+            text += page.extract_text()
+    except Exception as exc:
+        text = fallback_text_extraction(file_path)
+    return text
 
-def readDocx(file_path):
+
+def read_docx(file_path):
     doc = Document(file_path)
     content = ''
     # 每一段的编号、内容
@@ -22,6 +34,15 @@ def readDocx(file_path):
     return content
 
 
+def read_file(file_path: str):
+    if file_path.endswith('.pdf'):
+        return read_pdf(file_path)
+    elif file_path.endswith('.doc') or file_path.endswith('.docx'):
+        return read_docx(file_path)
+    else:
+        return ''
+
+
 if __name__ == '__main__':
-    content = readDocx('../test_files/医疗器械临床试验机构自查报告.docx')
+    content = read_pdf('../static/pdf_and_doc/刘宁-算法工程师.pdf')
     print(content)

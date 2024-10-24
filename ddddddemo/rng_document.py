@@ -1,5 +1,7 @@
 import os
 import os.path
+import re
+import sqlite3
 from typing import Dict, List, Any
 from uuid import uuid4
 import langchain
@@ -18,6 +20,7 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from loguru import logger
 from langchain_core.prompts import PromptTemplate
+from utils.read_dox2txt import read_file
 
 langchain.verbose = True
 
@@ -425,7 +428,7 @@ def query_keywords(keywords, text, llm: ChatOllama):
     print(res)
 
 
-def query_keywords_in_file(file_path, key_words=None):
+def query_keywords_in_file(file_path, user_input=None, st=None):
     '''
     find key words in file
     Args:
@@ -433,25 +436,33 @@ def query_keywords_in_file(file_path, key_words=None):
         file_path:
     Returns:
     '''
-    if key_words is None:
-        key_words = []
-        with open('./key_words') as f:
-            for k in f:
-                k = k.strip()
-                if k:
-                    key_words.append(k)
-    content = readDocx(file_path)
     seen_key_words = []
-    for key_wd in key_words:
-        if key_wd in content:
-            seen_key_words.append(key_wd)
-            continue
+    content = read_file(file_path)
+    if user_input is not None:
+        content = user_input + content
+    if st is not None:
+        data_base_name = st.session_state['data_base_name']
+    else:
+        data_base_name = './local_rag.db'
+    db_conn = sqlite3.connect(data_base_name)
+
+    cur = db_conn.cursor()
+    sql_text_q = """SELECT image_path,image_name, keywords FROM keywords_to_image"""
+    logger.info('sql_text_q is {}'.format(sql_text_q))
+    cur.execute(sql_text_q)
+    fetch_all = cur.fetchall()
+    if fetch_all:
+        for data in fetch_all:
+            split_keywords = re.split(',|，', data[2])
+            for key_word in split_keywords:
+                if key_word in content:
+                    seen_key_words.append(data)
     return seen_key_words
 
 
 if __name__ == '__main__':
     import os
-    from utils.read_dox2txt import readDocx
+
     # os.environ["HTTP_PROXY"] = 'http://127.0.0.1:58591'
     # os.environ["HTTPS_PROXY"] = 'http://127.0.0.1:58591'
     os.environ["all_proxy"] = ''

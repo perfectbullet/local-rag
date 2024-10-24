@@ -1,2 +1,11 @@
-PROJECT_DIR = '~/local-rag'
+from getpass import getuser
 
+PROJECT_DIR = '~/local-rag'
+# base_url = 'http://localhost:8501/app/static/'
+
+if getuser() == 'zj':
+    STATIC_URL = 'http://127.0.0.1:8501/app/static/'
+elif getuser() == 'ubuntu':
+    STATIC_URL = 'http://125.69.16.175:8501/app/static/'
+else:
+    STATIC_URL = 'http://192.168.1.159:8501/app/static/'

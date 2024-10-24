@@ -32,6 +32,14 @@ def set_initial_state():
                     state_value TEXT NOT NULL
                 )
                 ''')
+        cur.execute('''
+                        CREATE TABLE IF NOT EXISTS keywords_to_image (
+                            id INTEGER PRIMARY KEY,
+                            image_path TEXT UNIQUE NOT NULL,
+                            image_name TEXT NOT NULL,
+                            keywords TEXT NOT NULL
+                        )
+                        ''')
         conn.commit()
         st.session_state["data_base_name"] = data_base_name
 

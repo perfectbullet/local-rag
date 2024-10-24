@@ -2,8 +2,10 @@ import os.path
 
 import streamlit as st
 
+from ddddddemo.rng_document import query_keywords_in_file
 from utils.langchain_rag_for_st import langchain_chat_stream
 from utils.logs import logger
+from config import STATIC_URL
 
 
 def chatbox():
@@ -41,10 +43,13 @@ def chatbox():
                             for sc in st.session_state["sources"]:
                                 logger.info('sc is {}', sc)
                                 # ![local-rag-demo](http://localhost:8501/app/static/oktest_image_url//1446441727800.jpg)
-                                base_url = 'http://localhost:8501/app/static/'
+                                # STATIC_URL
+                                # STATIC_URL = 'http://127.0.0.1:8501/app/'
+                                # base_url = 'http://localhost:8501/app/static/'
                                 image_path = sc.get('image_path', '')
                                 if image_path:
-                                    image_markdown_url = '![{}]({}{})'.format(os.path.basename(image_path), base_url, image_path)
+                                    image_markdown_url = '![{}]({}{})'\
+                                        .format(os.path.basename(image_path), STATIC_URL, image_path)
                                     source_txt += '\n\n**{}**\n\n{}'.format(sc['name'], image_markdown_url)
                                     source_placeholder.markdown(source_txt)
                                 else:
@@ -52,14 +57,28 @@ def chatbox():
                                     if file_name in seen_file_names:
                                         continue
                                     seen_file_names.add(file_name)
-                                    new_markdown_url = '({}pdf_and_doc/{})'.format(base_url, file_name)
-                                    # logger.info('file_markdown_url {}', new_markdown_url)
-                                    # source_txt += '\n\n[**{}**]{}\n\n'.format(file_name, new_markdown_url)
-                                    # logger.info('source_txt {}', source_txt)
-                                    # source_placeholder.markdown(source_txt)
+                                    new_markdown_url = '{}pdf_and_doc/{}'.format(STATIC_URL, file_name)
+                                    logger.info('new_markdown_url is {}'.format(new_markdown_url))
                                     a_target = '''<a href="{}" download="{}">{}</a><br/>'''.format(new_markdown_url, file_name, file_name)
+                                    # a_target = '''<a href="{}" rel="noopener noreferrer" download="{}">{}</a><br/>'''.format(new_markdown_url, file_name, file_name)
                                     html_source += a_target
                                     source_placeholder.html(html_source)
+
+                                    # show item images
+                                    item_images_placeholder = st.empty()
+                                    file_path = os.path.join('./static/pdf_and_doc/', file_name)
+                                    # [('static/item_images/0945375522.jpg', '0945375522.jpg', '雾化设备'), ('static/item_images/0957281322.jpg', '0957281322.jpg', '辅助生殖器械')]
+                                    seen_key_words = query_keywords_in_file(
+                                        file_path,
+                                        user_input=prompt,
+                                        st=st
+                                    )
+                                    item_image_urls_markdown = ''
+                                    for keyword in seen_key_words:
+                                        item_image_url = '![{}]({}{})'.format(keyword[2], STATIC_URL, keyword[0])
+                                        logger.info(item_image_url)
+                                        item_image_urls_markdown += '\n\n**{}**\n\n{}'.format(keyword[2], item_image_url)
+                                    item_images_placeholder.markdown(item_image_urls_markdown)
 
                 # Add the user input to messages state
                 st.session_state["messages"].append({"role": "user", "content": prompt})
