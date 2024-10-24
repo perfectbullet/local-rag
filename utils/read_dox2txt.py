@@ -1,6 +1,6 @@
 from docx import Document
 from pypdf import PdfReader
-from pdfminer.high_level import extract_text as fallback_text_extraction
+# from pdfminer.high_level import extract_text as fallback_text_extraction
 
 
 def read_pdf(file_path):
@@ -10,7 +10,7 @@ def read_pdf(file_path):
         for page in reader.pages:
             text += page.extract_text()
     except Exception as exc:
-        text = fallback_text_extraction(file_path)
+        text = 'error is {}'.format(exc)
     return text
 
 
