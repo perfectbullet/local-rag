@@ -1,17 +1,24 @@
-import streamlit as st
-import os
-from openai import OpenAI
-import streamlit.components.v1 as components
-import time
-import re
-from functools import partial
-from streamlit_quill import st_quill
-
-# App title
-st.set_page_config(page_title="✏️AI Writer", layout="wide")
-
+import base64
 import re
 from collections import defaultdict
+from io import BytesIO
+
+import streamlit as st
+import streamlit.components.v1 as components
+from docx import Document
+from langchain_ollama import ChatOllama
+from streamlit_quill import st_quill
+from langchain_core.messages import HumanMessage, SystemMessage
+from config import OLLAMA_BASE_URL
+from langchain_core.output_parsers import StrOutputParser
+llm = ChatOllama(
+    model='qwen2.5:14b',
+    base_url=OLLAMA_BASE_URL,
+    temperature=0.7
+)
+
+# App title
+st.set_page_config(page_title="✏️AIE Writer", layout="wide")
 
 
 def parse_markdown(md_filepath):
@@ -60,14 +67,6 @@ def parse_markdown(md_filepath):
 
     return structured_data
 
-
-# client = OpenAI(
-#         api_key="sk-60f7dab83508414f94ec5c9c86751c53", # 如果您没有配置环境变量，请在此处用您的API Key进行替换
-#         base_url="https://dashscope.aliyuncs.com/compatible-mode/v1")
-client = OpenAI(
-    api_key='None', base_url="http://localhost:18400/v1"
-)
-
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "query" not in st.session_state:
@@ -88,7 +87,7 @@ if "expand_requirements" not in st.session_state:
     st.session_state.expand_requirements = ""
 
 
-# Function for generating LLaMA2 response
+# Function for generating llm response
 def init_write(query, key_words, key_point, writing_requirements, structured_data):
     toc = []
     for h1, h2_data in structured_data.items():
@@ -99,7 +98,7 @@ def init_write(query, key_words, key_point, writing_requirements, structured_dat
     toc = '\n'.join(toc)
 
     system = f"""
-    ## 角色描述：你是一名项目写作专家，能根据项目主题和给定的文档模板的目录结构，生成完整的项目《立项申请书》。
+## 角色描述：你是一名项目写作专家，能根据项目主题和给定的文档模板的目录结构，生成完整的项目《立项申请书》。
 ## 工作流程
 第一步：在开始撰写文章之前，必须认真阅读并牢记给定文档模板的目录结构。
 第二步：使用Markdown格式，作为专家文章作者，撰写一篇完全详细、长篇、100%独特、创意且人性化的信息性文章，至少2000字。文章应以正式、信息丰富和乐观的语气撰写。
@@ -117,28 +116,7 @@ def init_write(query, key_words, key_point, writing_requirements, structured_dat
 {toc}
 ```
 """
-    #     user = f"""
-    # ## 模板目录结构
-    # ```markdown
-    # # 一、项目简介
-    # # 二、必要性
-    # ## （一）立项背景
-    # ## （二）申报依据
-    # # 三、主要研究内容及应用前景分析
-    # ## （一）研究目标
-    # ## （二）研究内容
-    # ## （三）成果形式
-    # ## （四）技术指标
-    # # 四、初步方案
-    # ## （一）总体方案
-    # ## （二）研制周期
-    # ## （三）项目组组成
-    # # 五、经费概算和年度安排
-    # ## （一）科研项目经费预算表
-    # ## （二）项目直接经费预算明细表
-    # ```
-    # 项目名称:{query}
-    #     """
+
     all_outputs = []
     for h1, h2_data in structured_data.items():
         all_outputs.append(f'\n## {h1}\n')
@@ -151,24 +129,16 @@ def init_write(query, key_words, key_point, writing_requirements, structured_dat
     ```
     ## 注意：如果供参考的内容与项目主题和项目关键词等不相关，请不必参考，自行编写。
     """
-            messages = []
-            messages.append({'role': 'system', 'content': system})
-            messages.append({'role': 'user', 'content': user})
-            # for dict_message in st.session_state.messages:
-            #     if dict_message["role"] == "user":
-            #         messages.append({'role': 'user','content': dict_message["content"]})
-            #     else:
-            #         messages.append({'role': 'assistant','content': dict_message["content"]})
+            messages = [
+                SystemMessage(content=system),
+                HumanMessage(content=user),
+            ]
 
-            output = client.chat.completions.create(
-                # model="qwen-plus",
-                model="qwen7b",
-                messages=messages,
-                stream=True,
-                # 可选，配置以后会在流式输出的最后一行展示token使用信息
-                stream_options={"include_usage": False}
-            )
-            all_outputs.append(output)
+            parser = StrOutputParser()
+
+            chain = llm | parser
+            stream_res = chain.stream(messages)
+            all_outputs.append(stream_res)
         else:
             for h2, content in h2_data.items():
                 user = f"""
@@ -269,12 +239,6 @@ def display():
             st.write(message["content"])
 
 
-# import clipboard
-
-# def on_copy_click(text):
-#     st.session_state.copied.append(text)
-#     clipboard.copy(text)
-
 def star_write():
     query = st.session_state.query
     key_point = st.session_state.key_point
@@ -367,15 +331,10 @@ def expand():
                     chunk = chunk.choices
                     if chunk and chunk[0].delta.content is not None:
                         polish_full_text[choice_index % 3] += chunk[0].delta.content
-
                         polish_placeholder[0].markdown(polish_full_text[0], unsafe_allow_html=True)
                         polish_placeholder[1].markdown(polish_full_text[1], unsafe_allow_html=True)
                         polish_placeholder[2].markdown(polish_full_text[2], unsafe_allow_html=True)
                     choice_index += 1
-            # st_all_columns[0].chat_message("assistant").write(polish_full_text)
-            # st_all_columns[1].chat_message("assistant").write(polish_full_text_2)
-            # message = {"role": "assistant", "content": polish_full_text}
-            # st.session_state.messages.append(message)
         st.session_state.messages.append({"role": "assistant", "content": '草稿1：\n' + polish_full_text[0]})
         st.session_state.messages.append({"role": "assistant", "content": '草稿2：\n' + polish_full_text[1]})
         st.session_state.messages.append({"role": "assistant", "content": '草稿3：\n' + polish_full_text[2]})
@@ -386,14 +345,6 @@ def expand():
 def clear_chat_history():
     st.session_state.messages = []
     display()
-
-
-import streamlit as st
-import streamlit.components.v1 as components
-import base64
-import json
-from io import BytesIO
-from docx import Document
 
 
 def download_button(object_to_download, download_filename):
@@ -452,10 +403,6 @@ def export():
 
 with st.sidebar:
     st.title('✏️AI Writer')
-    # st.subheader('Models and parameters')
-    # temperature = st.sidebar.slider('temperature', min_value=0.01, max_value=5.0, value=0.1, step=0.01)
-    # top_p = st.sidebar.slider('top_p', min_value=0.01, max_value=1.0, value=0.9, step=0.01)
-    # max_length = st.sidebar.slider('max_length', min_value=64, max_value=4096, value=512, step=8)
 
     with st.expander("⚙️写作设置", expanded=True):
         with st.form(key='writing_form'):
