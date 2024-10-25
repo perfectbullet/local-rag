@@ -7,10 +7,14 @@ import streamlit as st
 import streamlit.components.v1 as components
 from docx import Document
 from langchain_ollama import ChatOllama
+from matplotlib.style.core import available
 from streamlit_quill import st_quill
 from langchain_core.messages import HumanMessage, SystemMessage
 from config import OLLAMA_BASE_URL
 from langchain_core.output_parsers import StrOutputParser
+from loguru import logger
+
+print('OLLAMA_BASE_URL is ', OLLAMA_BASE_URL)
 llm = ChatOllama(
     model='qwen2.5:14b',
     base_url=OLLAMA_BASE_URL,
@@ -18,12 +22,12 @@ llm = ChatOllama(
 )
 
 # App title
-st.set_page_config(page_title="✏️AIE Writer", layout="wide")
+st.set_page_config(page_title="✏️实验大纲生成", layout="wide")
 
 
 def parse_markdown(md_filepath):
     markdown_text = ''
-    with open(md_filepath, 'r') as f:
+    with open(md_filepath, 'r', encoding='utf8') as f:
         for l in f.readlines():
             markdown_text += l
     # 结构化数据存储
@@ -64,27 +68,9 @@ def parse_markdown(md_filepath):
 
                 # 存储二级标题及其内容
                 structured_data[h1_title][h2_title] = h2_content
-
+    logger.info('structured_data is {}', structured_data)
     return structured_data
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-if "query" not in st.session_state:
-    st.session_state.query = ""
-if "key_point" not in st.session_state:
-    st.session_state.key_point = ""
-if "key_words" not in st.session_state:
-    st.session_state.key_words = ""
-if "writing_requirements" not in st.session_state:
-    st.session_state.writing_requirements = ""
-if "polish_target_content" not in st.session_state:
-    st.session_state.polish_target_content = ""
-if "polish_requirements" not in st.session_state:
-    st.session_state.polish_requirements = ""
-if "expand_target_content" not in st.session_state:
-    st.session_state.expand_target_content = ""
-if "expand_requirements" not in st.session_state:
-    st.session_state.expand_requirements = ""
 
 
 # Function for generating llm response
@@ -97,11 +83,10 @@ def init_write(query, key_words, key_point, writing_requirements, structured_dat
                 toc.append(h2)
     toc = '\n'.join(toc)
 
-    system = f"""
-## 角色描述：你是一名项目写作专家，能根据项目主题和给定的文档模板的目录结构，生成完整的项目《立项申请书》。
+    system = f"""## 角色描述：你是一名试验大纲写作专家，能根据项目主题和给定的文档模板的目录结构，生成完整的《试验大纲》。
 ## 工作流程
 第一步：在开始撰写文章之前，必须认真阅读并牢记给定文档模板的目录结构。
-第二步：使用Markdown格式，作为专家文章作者，撰写一篇完全详细、长篇、100%独特、创意且人性化的信息性文章，至少2000字。文章应以正式、信息丰富和乐观的语气撰写。
+第二步：使用Markdown格式，作为专家文章作者，撰写一篇完全详细、长篇、100%独特、创意且人性化的信息性文章，至少2000字。文章应以严谨、追求事实的语气撰写。
 必须阅读以下所有信息。
 
 请使用{query}作为项目主题，并在每个标题下撰写至少400-500字的引人入胜的段落。
@@ -165,7 +150,7 @@ def init_write(query, key_words, key_point, writing_requirements, structured_dat
 
 
 def rewrite_polish(selected_text, polish_requirements):
-    system = """ ## 角色描述：你是一名项目写作专家，擅长对项目申请书中的文字进行润色。
+    system = """## 角色描述：你是一名项目写作专家，擅长对项目申请书中的文字进行润色。
 ## 工作流程
 第一步：在开始润色之前，必须认真阅读并牢记润色的要求。
 第二步：使用Markdown格式，按照润色的要求，对给你的文字进行润色。
@@ -176,49 +161,42 @@ def rewrite_polish(selected_text, polish_requirements):
 润色要求如下:
 {polish_requirements}
     """
-    messages = []
-    messages.append({'role': 'system', 'content': system})
-    messages.append({'role': 'user', 'content': user})
 
-    output = client.chat.completions.create(
-        # model="qwen-plus",
-        model="qwen7b",
-        messages=messages,
-        stream=True,
-        n=3
-    )
-    return output
+    messages = [
+        SystemMessage(content=system),
+        HumanMessage(content=user),
+    ]
+
+    parser = StrOutputParser()
+
+    chain = llm | parser
+    stream_res = chain.stream(messages)
+    # all_outputs.append(stream_res)
+    return stream_res
 
 
 def rewrite_expand(selected_text, polish_requirements):
-    system = """ ## 角色描述：你是一名项目写作专家，擅长对项目申请书中的文字进行扩写。
+    system = """## 角色描述：你是一名项目写作专家，擅长对项目申请书中的文字进行扩写。
 ## 工作流程
 第一步：在开始扩写之前，必须认真阅读并牢记扩写的要点。
-第二步：使用Markdown格式，按照扩写的要求，对给你的文字进行扩写。
-    """
+第二步：使用Markdown格式，按照扩写的要求，对给你的文字进行扩写。"""
     user = f"""
 原文字如下:
 {selected_text}
 扩写的要点如下:
-{polish_requirements}
-    """
-    messages = []
-    messages.append({'role': 'system', 'content': system})
-    messages.append({'role': 'user', 'content': user})
+{polish_requirements}"""
 
-    output = client.chat.completions.create(
-        # model="qwen-plus",
-        model="qwen7b",
-        messages=messages,
-        # max_tokens=500,
-        stream=True,
-        n=3,
-        # temperature=1.5,
-        # top_p=0.9,
-        # 可选，配置以后会在流式输出的最后一行展示token使用信息
-        stream_options={"include_usage": False}
-    )
-    return output
+    messages = [
+        SystemMessage(content=system),
+        HumanMessage(content=user),
+    ]
+
+    parser = StrOutputParser()
+
+    chain = llm | parser
+    stream_res = chain.stream(messages)
+
+    return stream_res
 
 
 if "messages" not in st.session_state.keys():
@@ -231,20 +209,22 @@ def display():
             st.write(message["content"])
 
 
-def star_write():
+def start_write():
     query = st.session_state.query
     key_point = st.session_state.key_point
     key_words = st.session_state.key_words
     writing_requirements = st.session_state.writing_requirements
-    structured_data = parse_markdown('/data/wsx_workspace/gx_demos/ai_writer/docx_to_md.md')
+    structured_data = parse_markdown('docx_to_md.md')
+
     with st.chat_message("user"):
         st.session_state.messages.append(
-            {"role": "user", "content": f"项目名称:{query},关键词:{key_words},项目要点:{key_point},写作要求:{writing_requirements}"})
-        st.write(f"项目名称:{query},关键词:{key_words},项目要点:{key_point},写作要求:{writing_requirements}")
+            {"role": "user", "content": f"大纲名称:{query},关键词:{key_words},大纲要点:{key_point},写作要求:{writing_requirements}"})
+        st.write(f"大纲名称:{query},关键词:{key_words},大纲要点:{key_point},写作要求:{writing_requirements}")
     with st.chat_message("assistant"):
-        with st.spinner("Thinking..."):
+        with st.spinner("写作中..."):
             response = init_write(query, key_words, key_point, writing_requirements, structured_data)
             placeholder = st.empty()
+            st.session_state.full_response_placeholder = placeholder
             full_response = ''
             for output_stream in response:
                 # result = ""
@@ -252,13 +232,14 @@ def star_write():
                     full_response += output_stream
                 else:
                     for chunk in output_stream:
-                        chunk = chunk.choices
-                        if chunk and chunk[0].delta.content:
-                            full_response += chunk[0].delta.content
-                            placeholder.markdown(full_response)
+                        full_response += chunk
+                        placeholder.markdown(full_response)
+                        st.session_state.full_response = full_response
                     full_response += '\n'
             placeholder.markdown(full_response, unsafe_allow_html=True)
+
     message = {"role": "assistant", "content": full_response}
+
     st.session_state.messages.append(message)
     display()
 
@@ -350,7 +331,7 @@ def download_button(object_to_download, download_filename):
     -------
     (str): the anchor tag to download object_to_download
     """
-    b64 = base64.b64encode(object_to_download.getvalue()).decode()
+    b64 = base64.b64encode(object_to_download.read()).decode()
     mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
     dl_link = f"""
@@ -367,44 +348,105 @@ def download_button(object_to_download, download_filename):
     return dl_link
 
 
+from Markdown2docx import Markdown2docx
 def export():
     # 获取 Quill 编辑器中的文本
-    edited_text = st.session_state.get("quill", "")
-
+    # edited_text = st.session_state.get("quill", "")
+    latest_message = st.session_state.full_response
+    logger.info('latest_message is {}'.format(latest_message))
     # 创建一个新的 Word 文档
-    doc = Document()
 
-    # 将编辑器中的文本添加到文档中
-    doc.add_paragraph(edited_text)
-
-    # 创建一个字节流对象
-    buffer = BytesIO()
-
-    # 将文档保存到字节流
-    doc.save(buffer)
-
-    # 将字节流的当前位置移动到开始
-    buffer.seek(0)
-
-    components.html(
-        download_button(buffer, 'output.docx'),
-        height=0,
-    )
+    project = Markdown2docx('tmp1215')
+    project.eat_soup()
+    # project.write_html()  # optional
+    # print(type(project.styles()))
+    # for k, v in project.styles().items():
+    #     print(f'stylename: {k} = {v}')
+    project.save()
+    with open('tmp1215.docx') as f:
+        components.html(
+            download_button(f.buffer, 'output.docx'),
+            height=0,
+        )
     display()
+
+if "full_response" not in st.session_state:
+    st.session_state.full_response = ''
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+# if "query" not in st.session_state:
+#     st.session_state.query = ""
+# if "key_point" not in st.session_state:
+#     st.session_state.key_point = ""
+# if "key_words" not in st.session_state:
+#     st.session_state.key_words = ""
+# if "writing_requirements" not in st.session_state:
+#     st.session_state.writing_requirements = ""
+if "polish_target_content" not in st.session_state:
+    st.session_state.polish_target_content = ""
+if "polish_requirements" not in st.session_state:
+    st.session_state.polish_requirements = ""
+if "expand_target_content" not in st.session_state:
+    st.session_state.expand_target_content = ""
+if "expand_requirements" not in st.session_state:
+    st.session_state.expand_requirements = ""
+
+
+
+write_requirement = """包含以下目录：
+1 编制说明
+2 适用范围
+3 编制依据	
+4 试验目的和性质
+5 受试样品的数量和技术状态
+5.1产品功能/组成
+5.2产品组成
+5.3受试样品技术状态
+5.4受试样品数量	
+5.5试验顺序
+6 试验项目内容及方法	
+6.1试验项目
+6.2试验方法
+7 试验设备和陪测设备要求
+7.1试验设备清单
+7.2陪测设备
+8 试验数据处理方法
+8.1试验数据的处理原则和方法。
+9 试验合格判据
+10 试验故障处理程序
+10.1试验中断处理
+10.2试验故障处理
+10.3试验恢复
+11 试验质量控制要求
+11.1试验前检测
+11.2试验过程质量控制	
+12 试验组织、参试单位及试验任务分工	
+13 试验计划和试验保障措施及要求
+13.1试验计划
+13.2试验保障措施及要求
+14 试验安全保证和保密要求	
+14.1对参试人员和保密的要求
+14.2对试验设备的要求	
+14.3对试验场地的要求	
+15 试验报告要求	
+"""
+
 
 
 with st.sidebar:
-    st.title('✏️AI Writer')
+    query_params = st.query_params
+    print('query_params is {}'.format(query_params))
+    st.title('✏️实验大纲生成')
 
     with st.expander("⚙️写作设置", expanded=True):
         with st.form(key='writing_form'):
-            use_ai_search = st.checkbox('是否使用AI搜索', value=True)
-            st.text_area('项目标题', key='query')
-            st.text_area('关键词', key='key_words')
-            st.text_area('项目要点', key='key_point')
-            st.text_area('写作要求', key='writing_requirements')
+            # use_ai_search = st.checkbox('是否使用AI搜索', value=False, available=False)
+            st.text_area('大纲标题', value='多功能数据采集终端手持式试验大纲', key='query')
+            st.text_area('关键词', value='振动试验，低温贮存，低温工作，高温贮存，高温工作，自由跌落', key='key_words')
+            st.text_area('大纲要点', value='1.本设计试验大纲的试验目的是验证多功能数据采集终端手持式EDAT-A2的物理特性、功能和性能、环境适应性、耐久性和可靠性。\n2.试验结果作为多功能数据采集终端_手持式EDAT-A2的环境适应性依据之一。', key='key_point')
+            st.text_area('写作要求', value="", key='writing_requirements')
 
-            st.form_submit_button('开始写作', on_click=star_write)
+            st.form_submit_button('开始生成', on_click=start_write)
 
     with st.expander("📑润色", expanded=True):
         with st.form(key='polish_form'):
