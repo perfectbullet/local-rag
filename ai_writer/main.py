@@ -141,34 +141,26 @@ def init_write(query, key_words, key_point, writing_requirements, structured_dat
             all_outputs.append(stream_res)
         else:
             for h2, content in h2_data.items():
-                user = f"""
-                请开始写二级章节`{h1}`的三级小章节`{h2}`。我为你准备了一些可供参考的内容来辅助你写作。你可以参考其中的篇章分布和语言风格。
-    供参考的内容如下:
-    ```text
-    {content}
-    ```
-    ## 注意：如果供参考的内容与项目主题和项目关键词等不相关，请不必参考，自行编写。
+                user = f"""请开始写二级章节`{h1}`的三级小章节`{h2}`。我为你准备了一些可供参考的内容来辅助你写作。你可以参考其中的篇章分布和语言风格。
+供参考的内容如下:
+```text
+{content}
+```
+## 注意：如果供参考的内容与项目主题和项目关键词等不相关，请不必参考，自行编写。
 
-    请以`## {h2}`为开头，输出写作的内容。
-    """
-                messages = []
-                messages.append({'role': 'system', 'content': system})
-                messages.append({'role': 'user', 'content': user})
-                # for dict_message in st.session_state.messages:
-                #     if dict_message["role"] == "user":
-                #         messages.append({'role': 'user','content': dict_message["content"]})
-                #     else:
-                #         messages.append({'role': 'assistant','content': dict_message["content"]})
+请以`## {h2}`为开头，输出写作的内容。
+"""
+                messages = [
+                    SystemMessage(content=system),
+                    HumanMessage(content=user),
+                ]
 
-                output = client.chat.completions.create(
-                    # model="qwen-plus",
-                    model='qwen7b',
-                    messages=messages,
-                    stream=True,
-                    # 可选，配置以后会在流式输出的最后一行展示token使用信息
-                    stream_options={"include_usage": False}
-                )
-                all_outputs.append(output)
+                parser = StrOutputParser()
+
+                chain = llm | parser
+                stream_res = chain.stream(messages)
+                all_outputs.append(stream_res)
+
     return all_outputs
 
 
