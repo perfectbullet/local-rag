@@ -1,18 +1,17 @@
 import base64
 import re
 from collections import defaultdict
-from io import BytesIO
 
 import streamlit as st
 import streamlit.components.v1 as components
-from docx import Document
-from langchain_ollama import ChatOllama
-from matplotlib.style.core import available
-from streamlit_quill import st_quill
+from Markdown2docx import Markdown2docx
 from langchain_core.messages import HumanMessage, SystemMessage
-from config import OLLAMA_BASE_URL
 from langchain_core.output_parsers import StrOutputParser
+from langchain_ollama import ChatOllama
 from loguru import logger
+# from streamlit_quill import st_quill
+
+from config import OLLAMA_BASE_URL
 
 print('OLLAMA_BASE_URL is ', OLLAMA_BASE_URL)
 llm = ChatOllama(
@@ -70,7 +69,6 @@ def parse_markdown(md_filepath):
                 structured_data[h1_title][h2_title] = h2_content
     logger.info('structured_data is {}', structured_data)
     return structured_data
-
 
 
 # Function for generating llm response
@@ -218,7 +216,8 @@ def start_write():
 
     with st.chat_message("user"):
         st.session_state.messages.append(
-            {"role": "user", "content": f"大纲名称:{query},关键词:{key_words},大纲要点:{key_point},写作要求:{writing_requirements}"})
+            {"role": "user",
+             "content": f"大纲名称:{query},关键词:{key_words},大纲要点:{key_point},写作要求:{writing_requirements}"})
         st.write(f"大纲名称:{query},关键词:{key_words},大纲要点:{key_point},写作要求:{writing_requirements}")
     with st.chat_message("assistant"):
         with st.spinner("写作中..."):
@@ -251,7 +250,8 @@ def polish():
     try:
         with st.chat_message("user"):
             st.session_state.messages.append(
-                {"role": "user", "content": f"针对\n```text\n{selected_text}\n```\n进行润色，要求:{polish_requirements}"})
+                {"role": "user",
+                 "content": f"针对\n```text\n{selected_text}\n```\n进行润色，要求:{polish_requirements}"})
             st.write(f"针对\n```text\n{selected_text}\n```\n进行润色，要求:{polish_requirements}")
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
@@ -287,7 +287,8 @@ def expand():
     try:
         with st.chat_message("user"):
             st.session_state.messages.append(
-                {"role": "user", "content": f"针对\n```text\n{selected_text}\n```\n进行扩写，要求:{expand_requirements}"})
+                {"role": "user",
+                 "content": f"针对\n```text\n{selected_text}\n```\n进行扩写，要求:{expand_requirements}"})
             st.write(f"针对\n```text\n{selected_text}\n```\n进行扩写，要求:{expand_requirements}")
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
@@ -331,44 +332,48 @@ def download_button(object_to_download, download_filename):
     -------
     (str): the anchor tag to download object_to_download
     """
+    logger.info('start to download')
     b64 = base64.b64encode(object_to_download.read()).decode()
     mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
-    dl_link = f"""
-    <html>
-    <head>
-    <title>Start Auto Download file</title>
-    <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
-    <script>
-    $('<a href="data:{mime_type};base64,{b64}" download="{download_filename}">')[0].click()
-    </script>
-    </head>
-    </html>
-    """
-    return dl_link
+    with open('./static/jquery-3.2.1.min.js', 'rt') as f:
+        js = f.read()
+        # <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
+        dl_link = f"""
+        <html>
+        <head>
+        <title>Start Auto Download file</title>
+        <script>{js}</script>
+        <script>
+        $('<a href="data:{mime_type};base64,{b64}" download="{download_filename}">')[0].click()
+        </script>
+        </head>
+        </html>
+        """
+        print(dl_link)
+        return dl_link
 
 
-from Markdown2docx import Markdown2docx
 def export():
     # 获取 Quill 编辑器中的文本
     # edited_text = st.session_state.get("quill", "")
     latest_message = st.session_state.full_response
     logger.info('latest_message is {}'.format(latest_message))
     # 创建一个新的 Word 文档
+    with open('tmp1215.md', 'wt', encoding='utf8') as f:
+         f.write(latest_message)
 
     project = Markdown2docx('tmp1215')
     project.eat_soup()
-    # project.write_html()  # optional
-    # print(type(project.styles()))
-    # for k, v in project.styles().items():
-    #     print(f'stylename: {k} = {v}')
     project.save()
+
     with open('tmp1215.docx') as f:
         components.html(
-            download_button(f.buffer, 'output.docx'),
+            download_button(f.buffer, 'outputv2.docx'),
             height=0,
         )
     display()
+
 
 if "full_response" not in st.session_state:
     st.session_state.full_response = ''
@@ -390,8 +395,6 @@ if "expand_target_content" not in st.session_state:
     st.session_state.expand_target_content = ""
 if "expand_requirements" not in st.session_state:
     st.session_state.expand_requirements = ""
-
-
 
 write_requirement = """包含以下目录：
 1 编制说明
@@ -431,6 +434,21 @@ write_requirement = """包含以下目录：
 15 试验报告要求	
 """
 
+def export_to_buffer():
+    latest_message = st.session_state.full_response
+    logger.info('latest_message is {}'.format(latest_message))
+    project = Markdown2docx('tmp1215')
+    project.eat_soup()
+    project.save()
+    logger.info('export_to_buffer tmp1215 is done')
+    with open('tmp1215.docx', mode='rb') as f:
+        return f.read()
+
+
+def export_to_doc():
+
+    with open('tmp1215.docx', mode='rb') as f:
+        return f.read()
 
 
 with st.sidebar:
@@ -443,7 +461,9 @@ with st.sidebar:
             # use_ai_search = st.checkbox('是否使用AI搜索', value=False, available=False)
             st.text_area('大纲标题', value='多功能数据采集终端手持式试验大纲', key='query')
             st.text_area('关键词', value='振动试验，低温贮存，低温工作，高温贮存，高温工作，自由跌落', key='key_words')
-            st.text_area('大纲要点', value='1.本设计试验大纲的试验目的是验证多功能数据采集终端手持式EDAT-A2的物理特性、功能和性能、环境适应性、耐久性和可靠性。\n2.试验结果作为多功能数据采集终端_手持式EDAT-A2的环境适应性依据之一。', key='key_point')
+            st.text_area('大纲要点',
+                         value='1.本设计试验大纲的试验目的是验证多功能数据采集终端手持式EDAT-A2的物理特性、功能和性能、环境适应性、耐久性和可靠性。\n2.试验结果作为多功能数据采集终端_手持式EDAT-A2的环境适应性依据之一。',
+                         key='key_point')
             st.text_area('写作要求', value="", key='writing_requirements')
 
             st.form_submit_button('开始生成', on_click=start_write)
@@ -464,5 +484,5 @@ with st.sidebar:
 
     # Streamlit 表单
     with st.form(key='edit_form'):
-        edited_text = st_quill(key="quill", placeholder="在这里编辑文本...")
+        # edited_text = st_quill(key="quill", placeholder="在这里编辑文本...")
         st.form_submit_button('导出', on_click=export)
