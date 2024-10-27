@@ -209,11 +209,11 @@ def display():
     logger.info('display')
     with st.container(border=True):
         with st.container(border=True):
-            st.markdown('''##### ✏️写作大纲和要求''')
+            st.markdown('''###### ✏️写作大纲和要求''')
             with st.container(border=True):
                 placeholder = st.empty()
                 placeholder.markdown(st.session_state.write_requirement )
-            st.markdown('''##### ✏️文案生成''')
+            st.markdown('''###### ✏️文案生成''')
             with st.container(border=True):
                 if st.session_state.full_response:
                     st.write(st.session_state.full_response)
@@ -227,7 +227,7 @@ def start_write():
             key_words = st.session_state.key_words
             writing_requirements = st.session_state.writing_requirements
             structured_data = parse_markdown('docx_to_md.md')
-            st.markdown('''##### ✏️写作大纲和要求''')
+            st.markdown('''###### ✏️写作大纲和要求''')
             with st.container(border=True):
                 st.session_state.messages.append(
                     {"role": "user",
@@ -237,7 +237,7 @@ def start_write():
                 placeholder = st.empty()
                 placeholder.markdown(write_requirement)
 
-            st.markdown('''##### ✏️文案生成''')
+            st.markdown('''###### ✏️文案生成''')
             with st.container(border=True):
                 response = init_write(query, key_words, key_point, writing_requirements, structured_data)
                 st.session_state.stop_generate = False
@@ -442,7 +442,7 @@ def stop_generate():
 with st.sidebar:
     query_params = st.query_params
     print('query_params is {}'.format(query_params))
-    st.markdown('### 文案创作')
+    st.markdown('#### 文案创作')
     # with st.expander("⚙️写作设置", expanded=True):
     #     with st.form(key='writing_form'):
             # use_ai_search = st.checkbox('是否使用AI搜索', value=False, available=False)
@@ -488,6 +488,15 @@ with st.sidebar:
     }
     section[data-testid="stFileUploaderDropzone" ]{
         align-items: center !important;
+    }
+    .st-b6{
+        font-size: 14px;
+    }
+    h1,h2,h3,h4 {
+        font-size: 14px;
+    }
+    p,h6{
+        font-size: 14px;
     }
     </style>
     """,
