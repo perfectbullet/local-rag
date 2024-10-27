@@ -207,60 +207,62 @@ if "messages" not in st.session_state.keys():
 
 def display():
     logger.info('display')
-    st.subheader('写作大纲和要求')
     with st.container(border=True):
-        for message in st.session_state.messages:
-            st.write(message["content"])
-    st.subheader('文案生成')
-    with st.container(border=True):
-        if st.session_state.full_response:
-            st.write(st.session_state.full_response)
+        with st.container(border=True):
+            st.markdown('''##### ✏️写作大纲和要求''')
+            with st.container(border=True):
+                placeholder = st.empty()
+                placeholder.markdown(st.session_state.write_requirement )
+            st.markdown('''##### ✏️文案生成''')
+            with st.container(border=True):
+                if st.session_state.full_response:
+                    st.write(st.session_state.full_response)
 
 def start_write():
-    col1, = st.columns([1, ])
-    with col1:
-        query = st.session_state.query
-        key_point = st.session_state.key_point
-        key_words = st.session_state.key_words
-        writing_requirements = st.session_state.writing_requirements
-        structured_data = parse_markdown('docx_to_md.md')
-        st.subheader('✏️写作大纲和要求')
+    # col1, = st.columns([1, ])
+    with st.container(border=True):
         with st.container(border=True):
-            st.session_state.messages.append(
-                {"role": "user",
-                 "content": f"大纲名称:{query},关键词:{key_words},大纲要点:{key_point},写作要求:{writing_requirements}"})
-            markdown_str = f"大纲名称:{query}\n\n关键词: {key_words}\n\n大纲要点:{key_point}\n\n写作要求:{writing_requirements}"
-            placeholder = st.empty()
-            placeholder.markdown(markdown_str)
+            query = st.session_state.query
+            key_point = st.session_state.key_point
+            key_words = st.session_state.key_words
+            writing_requirements = st.session_state.writing_requirements
+            structured_data = parse_markdown('docx_to_md.md')
+            st.markdown('''##### ✏️写作大纲和要求''')
+            with st.container(border=True):
+                st.session_state.messages.append(
+                    {"role": "user",
+                     "content": f"大纲名称:{query},关键词:{key_words},大纲要点:{key_point},写作要求:{writing_requirements}"})
+                write_requirement = f"大纲名称:{query}\n\n关键词: {key_words}\n\n大纲要点:{key_point}\n\n写作要求:{writing_requirements}"
+                st.session_state.write_requirement = write_requirement
+                placeholder = st.empty()
+                placeholder.markdown(write_requirement)
 
-        # with st.chat_message("assistant"):
-        #     with st.spinner("写作中..."):
-        st.subheader('✏️文案生成')
-        with st.container(border=True):
-            response = init_write(query, key_words, key_point, writing_requirements, structured_data)
-            st.session_state.stop_generate = False
-            placeholder = st.empty()
-            st.session_state.full_response_placeholder = placeholder
-            full_response = ''
-            placeholder.markdown(full_response)
-            for output_stream in response:
+            st.markdown('''##### ✏️文案生成''')
+            with st.container(border=True):
+                response = init_write(query, key_words, key_point, writing_requirements, structured_data)
+                st.session_state.stop_generate = False
+                placeholder = st.empty()
+                st.session_state.full_response_placeholder = placeholder
+                full_response = ''
+                placeholder.markdown(full_response)
+                for output_stream in response:
 
-                if st.session_state.stop_generate:
-                    placeholder.markdown(full_response)
-                    break
-                if isinstance(output_stream, str):
-                    full_response += output_stream
-                else:
-                    for chunk in output_stream:
-                        full_response += chunk
+                    if st.session_state.stop_generate:
                         placeholder.markdown(full_response)
-                        st.session_state.full_response = full_response
-                    full_response += '\n'
-            placeholder.markdown(full_response, unsafe_allow_html=True)
-            message = {"role": "assistant", "content": full_response}
-            print('full_response is {}'.format(full_response))
-            st.session_state.messages.append(message)
-            display()
+                        break
+                    if isinstance(output_stream, str):
+                        full_response += output_stream
+                    else:
+                        for chunk in output_stream:
+                            full_response += chunk
+                            placeholder.markdown(full_response)
+                            st.session_state.full_response = full_response
+                        full_response += '\n'
+                placeholder.markdown(full_response, unsafe_allow_html=True)
+                message = {"role": "assistant", "content": full_response}
+                print('full_response is {}'.format(full_response))
+                st.session_state.messages.append(message)
+                display()
 
 
 def polish():
@@ -399,6 +401,8 @@ if "full_response" not in st.session_state:
     st.session_state.full_response = ''
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "write_requirement" not in st.session_state:
+    st.session_state.write_requirement = ''
 # if "query" not in st.session_state:
 #     st.session_state.query = ""
 # if "key_point" not in st.session_state:
@@ -438,24 +442,23 @@ def stop_generate():
 with st.sidebar:
     query_params = st.query_params
     print('query_params is {}'.format(query_params))
-    st.title('✏️文案创作')
-
+    st.markdown('### 文案创作')
     # with st.expander("⚙️写作设置", expanded=True):
     #     with st.form(key='writing_form'):
             # use_ai_search = st.checkbox('是否使用AI搜索', value=False, available=False)
-    st.text_area('大纲标题', value='多功能数据采集终端手持式试验大纲', key='query')
-    st.text_area('关键词', value='振动试验，低温贮存，低温工作，高温贮存，高温工作，自由跌落', key='key_words')
-    st.text_area('大纲要点',
+    st.text_area('**大纲标题**', value='多功能数据采集终端手持式试验大纲', key='query')
+    st.text_area('**关键词**', value='振动试验，低温贮存，低温工作，高温贮存，高温工作，自由跌落', key='key_words')
+    st.text_area('**大纲要点**',
                  value='1.本设计试验大纲的试验目的是验证多功能数据采集终端手持式EDAT-A2的物理特性、功能和性能、环境适应性、耐久性和可靠性。\n2.试验结果作为多功能数据采集终端_手持式EDAT-A2的环境适应性依据之一。',
                  key='key_point')
-    st.text_area('写作要求', value="", key='writing_requirements')
+    st.text_area('**写作要求**', value="", key='writing_requirements')
     col_v1, col_v2, col_v3= st.columns([1, 1, 1])
     with col_v1:
-        st.button('生成', on_click=start_write)
+        st.button('**生成**', on_click=start_write)
     with col_v2:
-        st.button('停止', on_click=stop_generate)
+        st.button('**停止**', on_click=stop_generate)
     with col_v3:
-        st.button('导出', on_click=export)
+        st.button('**导出**', on_click=export)
 
     # 修改页面布局
     st.markdown(
