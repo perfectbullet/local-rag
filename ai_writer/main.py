@@ -20,8 +20,12 @@ llm = ChatOllama(
     temperature=0.7
 )
 
-# App title
-st.set_page_config(page_title="✏️实验大纲生成", layout="wide")
+st.set_page_config(
+    page_title="文案创作",
+    page_icon="📚",
+    layout="wide",
+    initial_sidebar_state='expanded',
+)
 
 
 def parse_markdown(md_filepath):
@@ -202,31 +206,48 @@ if "messages" not in st.session_state.keys():
 
 
 def display():
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
+    logger.info('display')
+    st.subheader('写作大纲和要求')
+    with st.container(border=True):
+        for message in st.session_state.messages:
             st.write(message["content"])
-
+    st.subheader('文案生成')
+    with st.container(border=True):
+        if st.session_state.full_response:
+            st.write(st.session_state.full_response)
 
 def start_write():
-    query = st.session_state.query
-    key_point = st.session_state.key_point
-    key_words = st.session_state.key_words
-    writing_requirements = st.session_state.writing_requirements
-    structured_data = parse_markdown('docx_to_md.md')
+    col1, = st.columns([1, ])
+    with col1:
+        query = st.session_state.query
+        key_point = st.session_state.key_point
+        key_words = st.session_state.key_words
+        writing_requirements = st.session_state.writing_requirements
+        structured_data = parse_markdown('docx_to_md.md')
+        st.subheader('✏️写作大纲和要求')
+        with st.container(border=True):
+            st.session_state.messages.append(
+                {"role": "user",
+                 "content": f"大纲名称:{query},关键词:{key_words},大纲要点:{key_point},写作要求:{writing_requirements}"})
+            markdown_str = f"大纲名称:{query}\n\n关键词: {key_words}\n\n大纲要点:{key_point}\n\n写作要求:{writing_requirements}"
+            placeholder = st.empty()
+            placeholder.markdown(markdown_str)
 
-    with st.chat_message("user"):
-        st.session_state.messages.append(
-            {"role": "user",
-             "content": f"大纲名称:{query},关键词:{key_words},大纲要点:{key_point},写作要求:{writing_requirements}"})
-        st.write(f"大纲名称:{query},关键词:{key_words},大纲要点:{key_point},写作要求:{writing_requirements}")
-    with st.chat_message("assistant"):
-        with st.spinner("写作中..."):
+        # with st.chat_message("assistant"):
+        #     with st.spinner("写作中..."):
+        st.subheader('✏️文案生成')
+        with st.container(border=True):
             response = init_write(query, key_words, key_point, writing_requirements, structured_data)
+            st.session_state.stop_generate = False
             placeholder = st.empty()
             st.session_state.full_response_placeholder = placeholder
             full_response = ''
+            placeholder.markdown(full_response)
             for output_stream in response:
-                # result = ""
+
+                if st.session_state.stop_generate:
+                    placeholder.markdown(full_response)
+                    break
                 if isinstance(output_stream, str):
                     full_response += output_stream
                 else:
@@ -236,11 +257,10 @@ def start_write():
                         st.session_state.full_response = full_response
                     full_response += '\n'
             placeholder.markdown(full_response, unsafe_allow_html=True)
-
-    message = {"role": "assistant", "content": full_response}
-
-    st.session_state.messages.append(message)
-    display()
+            message = {"role": "assistant", "content": full_response}
+            print('full_response is {}'.format(full_response))
+            st.session_state.messages.append(message)
+            display()
 
 
 def polish():
@@ -395,44 +415,9 @@ if "expand_target_content" not in st.session_state:
     st.session_state.expand_target_content = ""
 if "expand_requirements" not in st.session_state:
     st.session_state.expand_requirements = ""
+if "stop_generate" not in st.session_state:
+    st.session_state.stop_generate = False
 
-write_requirement = """包含以下目录：
-1 编制说明
-2 适用范围
-3 编制依据	
-4 试验目的和性质
-5 受试样品的数量和技术状态
-5.1产品功能/组成
-5.2产品组成
-5.3受试样品技术状态
-5.4受试样品数量	
-5.5试验顺序
-6 试验项目内容及方法	
-6.1试验项目
-6.2试验方法
-7 试验设备和陪测设备要求
-7.1试验设备清单
-7.2陪测设备
-8 试验数据处理方法
-8.1试验数据的处理原则和方法。
-9 试验合格判据
-10 试验故障处理程序
-10.1试验中断处理
-10.2试验故障处理
-10.3试验恢复
-11 试验质量控制要求
-11.1试验前检测
-11.2试验过程质量控制	
-12 试验组织、参试单位及试验任务分工	
-13 试验计划和试验保障措施及要求
-13.1试验计划
-13.2试验保障措施及要求
-14 试验安全保证和保密要求	
-14.1对参试人员和保密的要求
-14.2对试验设备的要求	
-14.3对试验场地的要求	
-15 试验报告要求	
-"""
 
 def export_to_buffer():
     latest_message = st.session_state.full_response
@@ -445,44 +430,83 @@ def export_to_buffer():
         return f.read()
 
 
-def export_to_doc():
-
-    with open('tmp1215.docx', mode='rb') as f:
-        return f.read()
+def stop_generate():
+    st.session_state.stop_generate = True
+    display()
 
 
 with st.sidebar:
     query_params = st.query_params
     print('query_params is {}'.format(query_params))
-    st.title('✏️实验大纲生成')
+    st.title('✏️文案创作')
 
-    with st.expander("⚙️写作设置", expanded=True):
-        with st.form(key='writing_form'):
+    # with st.expander("⚙️写作设置", expanded=True):
+    #     with st.form(key='writing_form'):
             # use_ai_search = st.checkbox('是否使用AI搜索', value=False, available=False)
-            st.text_area('大纲标题', value='多功能数据采集终端手持式试验大纲', key='query')
-            st.text_area('关键词', value='振动试验，低温贮存，低温工作，高温贮存，高温工作，自由跌落', key='key_words')
-            st.text_area('大纲要点',
-                         value='1.本设计试验大纲的试验目的是验证多功能数据采集终端手持式EDAT-A2的物理特性、功能和性能、环境适应性、耐久性和可靠性。\n2.试验结果作为多功能数据采集终端_手持式EDAT-A2的环境适应性依据之一。',
-                         key='key_point')
-            st.text_area('写作要求', value="", key='writing_requirements')
+    st.text_area('大纲标题', value='多功能数据采集终端手持式试验大纲', key='query')
+    st.text_area('关键词', value='振动试验，低温贮存，低温工作，高温贮存，高温工作，自由跌落', key='key_words')
+    st.text_area('大纲要点',
+                 value='1.本设计试验大纲的试验目的是验证多功能数据采集终端手持式EDAT-A2的物理特性、功能和性能、环境适应性、耐久性和可靠性。\n2.试验结果作为多功能数据采集终端_手持式EDAT-A2的环境适应性依据之一。',
+                 key='key_point')
+    st.text_area('写作要求', value="", key='writing_requirements')
+    col_v1, col_v2, col_v3= st.columns([1, 1, 1])
+    with col_v1:
+        st.button('生成', on_click=start_write)
+    with col_v2:
+        st.button('停止', on_click=stop_generate)
+    with col_v3:
+        st.button('导出', on_click=export)
 
-            st.form_submit_button('开始生成', on_click=start_write)
+    # 修改页面布局
+    st.markdown(
+        r"""
+    <style>
+    header[data-testid='stHeader'] {
+       visibility: hidden;
+    }
+    header[data-testid='stHeader'] {
+      display:none;
+    }
+    .st-emotion-cache-1jicfl2{
+        padding:0px 0rem;
+    }
+     hr{
+        margin:0;
+    }
+    div[data-testid = "stSidebarHeader"]{
+         background: url("/app/static/logo.png") no-repeat;
+     }
+    button[data-testid="stBaseButton-secondary"]{
+        padding: 0.25rem 1rem;
+    }
+    h2{
+        padding: 0rem 0px;
+        line-height: 1;
+    }
+    section[data-testid="stFileUploaderDropzone" ]{
+        align-items: center !important;
+    }
+    </style>
+    """,
+        unsafe_allow_html=True,
+    )
 
-    with st.expander("📑润色", expanded=True):
-        with st.form(key='polish_form'):
-            st.text_area('需要润色的文本', key='polish_target_content')
-            st.text_area('润色要求', key='polish_requirements')
-            st.form_submit_button('开始润色', on_click=polish)
-
-    with st.expander("🗒️扩写", expanded=True):
-        with st.form(key='expand_form'):
-            st.text_area('需要扩写的文本', key='expand_target_content')
-            st.text_area('扩写要求', key='expand_requirements')
-            st.form_submit_button('开始扩写', on_click=expand)
-
-    st.button('Clear Chat History', on_click=clear_chat_history)
+    #
+    # with st.expander("📑润色", expanded=True):
+    #     with st.form(key='polish_form'):
+    #         st.text_area('需要润色的文本', key='polish_target_content')
+    #         st.text_area('润色要求', key='polish_requirements')
+    #         st.form_submit_button('开始润色', on_click=polish)
+    #
+    # with st.expander("🗒️扩写", expanded=True):
+    #     with st.form(key='expand_form'):
+    #         st.text_area('需要扩写的文本', key='expand_target_content')
+    #         st.text_area('扩写要求', key='expand_requirements')
+    #         st.form_submit_button('开始扩写', on_click=expand)
+    #
+    # st.button('Clear Chat History', on_click=clear_chat_history)
 
     # Streamlit 表单
-    with st.form(key='edit_form'):
-        # edited_text = st_quill(key="quill", placeholder="在这里编辑文本...")
-        st.form_submit_button('导出', on_click=export)
+    # with st.form(key='edit_form'):
+    #     # edited_text = st_quill(key="quill", placeholder="在这里编辑文本...")
+    #     st.form_submit_button('导出', on_click=export)

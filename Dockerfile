@@ -16,8 +16,8 @@ COPY . .
 # Install pipenv and compilation dependencies
 RUN python -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple --upgrade pip
 RUN pip config set global.index-url https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple
-RUN pip install -r requirements.txt
-RUN pip install -e ./deal_excel_and_json
+RUN pip install -r requirements.txt  \
+    && pip install -e ./deal_excel_and_json
 
 RUN pip install streamlit-modal
 # Expose the Streamlit port

@@ -7,7 +7,7 @@
 ![GitHub Last Commit](https://img.shields.io/github/last-commit/jonfairbanks/local-rag)
 ![GitHub License](https://img.shields.io/github/license/jonfairbanks/local-rag)
 
-Offline, Open-Source RAG
+**Offline, Open-Source RAG**
 
 Ingest files for retrieval augmented generation (RAG) with open-source Large Language Models (LLMs), all without 3rd parties or sensitive data leaving your network.
 
