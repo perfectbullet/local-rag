@@ -63,6 +63,7 @@ def set_initial_state():
         if st_state:
             st.session_state["selected_knowledge_base"] = st_state[1]
         else:
+            logger.info('knowledge_base_list {}', st.session_state["knowledge_base_list"])
             st.session_state["selected_knowledge_base"] = st.session_state["knowledge_base_list"][0]
 
     if "collection_name" not in st.session_state:

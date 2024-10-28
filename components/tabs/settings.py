@@ -30,6 +30,7 @@ def settings():
 
         knowledge_base_settings = st.container(border=True)
         with knowledge_base_settings:
+            logger.info('knowledge_base_list is {}', st.session_state["knowledge_base_list"])
             knowledge_base = st.selectbox(
                 "专用领域模型",
                 st.session_state["knowledge_base_list"],

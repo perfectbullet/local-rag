@@ -20,6 +20,7 @@ def get_knowledge_base():
         logger.info(knowledge_base_config)
         knowledge_base_list = [data['knowledge_base_name'] for data in knowledge_base_config]
         # {"knowledge_base_name": "alpaca_merge-医疗器械-产品详细", "collection_dir": "oktest_image_url_local_image"}
+        logger.info('knowledge_base_list is {}', knowledge_base_list)
         st.session_state["knowledge_base_list"] = knowledge_base_list
         st.session_state["knowledge_base_config"] = knowledge_base_config
     except Exception as err:

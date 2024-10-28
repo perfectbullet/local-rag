@@ -1,5 +1,5 @@
 [
-  {"knowledge_base_name": "中试专用领域模型-法律法规", "collection_dir": "laws_and_regulations"},
-  {"knowledge_base_name": "中试专用领域模型-医疗器械", "collection_dir": "alpaca_merge_medical_mechain"},
-  {"knowledge_base_name": "中试专用领域模型-军事题材", "collection_dir": "military_themes"}
+  {"knowledge_base_name": "法律法规-中试专用领域模型", "collection_dir": "laws_and_regulations"},
+  {"knowledge_base_name": "医疗器械-中试专用领域模型", "collection_dir": "alpaca_merge_medical_mechain"},
+  {"knowledge_base_name": "军事题材-中试专用领域模型", "collection_dir": "military_themes"}
 ]
