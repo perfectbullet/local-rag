@@ -46,6 +46,13 @@ def set_page_config():
     button[data-testid="stBaseButton-secondary"]{
         padding: 0.25rem 1rem;
     }
+    textarea{
+        background: white;
+        border: 1px solid #eee;
+    }
+    div[data-testid="collapsedControl"]{
+        display:none;
+    }
     h2{
         padding: 0rem 0px;
         line-height: 1;
@@ -53,12 +60,14 @@ def set_page_config():
     section[data-testid="stFileUploaderDropzone" ]{
         align-items: center !important;
     }
+    .st-bu {
+        background-color: white;
+    }
+    div[data-testid="chatAvatarIcon-assistant"]{
+        background-color: rgb(27 162 160);
+    }
     </style>
     """,
         unsafe_allow_html=True,
     )
-
-    # with open('ok.js', encoding='utf8') as f:
-    #     script = f.read()
-    #     print('script is ', script)
-    # st_javascript(script)
+a
