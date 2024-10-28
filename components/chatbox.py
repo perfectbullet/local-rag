@@ -11,7 +11,7 @@ from config import STATIC_URL
 def chatbox():
     # 设定2列
     query_params = st.query_params
-    logger.info('query_params is {}', query_params)
+    # logger.info('query_params is {}', query_params)
     show_help = query_params.get('help', '')
     if show_help != 'no-help':
         col1, col2 = st.columns([4, 1])
@@ -45,10 +45,6 @@ def chatbox():
                             seen_file_names = set()
                             for sc in st.session_state["sources"]:
                                 logger.info('sc is {}', sc)
-                                # ![local-rag-demo](http://localhost:8501/app/static/oktest_image_url//1446441727800.jpg)
-                                # STATIC_URL
-                                # STATIC_URL = 'http://127.0.0.1:8501/app/'
-                                # base_url = 'http://localhost:8501/app/static/'
                                 image_path = sc.get('image_path', '')
                                 if image_path:
                                     image_markdown_url = '![{}]({}{})'\
@@ -63,19 +59,18 @@ def chatbox():
                                     new_markdown_url = '{}pdf_and_doc/{}'.format(STATIC_URL, file_name)
                                     logger.info('new_markdown_url is {}'.format(new_markdown_url))
                                     a_target = '''<a href="{}" download="{}">{}</a><br/>'''.format(new_markdown_url, file_name, file_name)
-                                    # a_target = '''<a href="{}" rel="noopener noreferrer" download="{}">{}</a><br/>'''.format(new_markdown_url, file_name, file_name)
                                     html_source += a_target
                                     source_placeholder.html(html_source)
 
                                     # show item images
                                     item_images_placeholder = st.empty()
                                     file_path = os.path.join('./static/pdf_and_doc/', file_name)
-                                    # [('static/item_images/0945375522.jpg', '0945375522.jpg', '雾化设备'), ('static/item_images/0957281322.jpg', '0957281322.jpg', '辅助生殖器械')]
                                     seen_key_words = query_keywords_in_file(
                                         file_path,
                                         user_input=prompt,
                                         st=st
                                     )
+                                    logger.info('seen_key_words is {}', seen_key_words)
                                     item_image_urls_markdown = ''
                                     for keyword in seen_key_words:
                                         item_image_url = '![{}]({}{})'.format(keyword[2], STATIC_URL, keyword[0])
@@ -93,7 +88,7 @@ def chatbox():
                         st.chat_message(msg["role"]).write(msg["content"])
     with col2:
         query_params = st.query_params
-        logger.info('query_params is {}', query_params)
+        # logger.info('query_params is {}', query_params)
         show_help = query_params.get('help', '')
         if show_help != 'no-help':
             with st.container(height=800):

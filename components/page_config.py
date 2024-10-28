@@ -6,7 +6,7 @@ from utils.logs import logger
 
 def set_page_config():
     query_params = st.query_params
-    logger.info('query_params is {}', query_params)
+    # logger.info('query_params is {}', query_params)
     if query_params.get('sidebar_state', '') == 'collapsed':
         # http://localhost:8503/?sidebar_state=collapsed&help=no-help
         sidebar_state = query_params.get('sidebar_state', '')

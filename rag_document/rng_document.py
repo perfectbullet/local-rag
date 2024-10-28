@@ -86,75 +86,28 @@ def demo_add_document(vector_store: Chroma):
         metadata={"source": "tweet"},
         id=1,
     )
-
     document_2 = Document(
         page_content="The weather forecast for tomorrow is cloudy and overcast, with a high of 62 degrees.",
         metadata={"source": "news"},
         id=2,
     )
-
     document_3 = Document(
         page_content="Building an exciting new project with LangChain - come check it out!",
         metadata={"source": "tweet"},
         id=3,
     )
-
     document_4 = Document(
         page_content="Robbers broke into the city bank and stole $1 million in cash.",
         metadata={"source": "news"},
         id=4,
     )
-
-    document_5 = Document(
-        page_content="Wow! That was an amazing movie. I can't wait to see it again.",
-        metadata={"source": "tweet"},
-        id=5,
-    )
-
-    document_6 = Document(
-        page_content="Is the new iPhone worth the price? Read this review to find out.",
-        metadata={"source": "website"},
-        id=6,
-    )
-
-    document_7 = Document(
-        page_content="The top 10 soccer players in the world right now.",
-        metadata={"source": "website"},
-        id=7,
-    )
-
-    document_8 = Document(
-        page_content="LangGraph is the best framework for building stateful, agentic applications!",
-        metadata={"source": "tweet"},
-        id=8,
-    )
-
-    document_9 = Document(
-        page_content="The stock market is down 500 points today due to fears of a recession.",
-        metadata={"source": "news"},
-        id=9,
-    )
-
-    document_10 = Document(
-        page_content="I have a bad feeling I am going to get deleted :(",
-        metadata={"source": "tweet"},
-        id=10,
-    )
-
     documents = [
         document_1,
         document_2,
         document_3,
         document_4,
-        document_5,
-        document_6,
-        document_7,
-        document_8,
-        document_9,
-        document_10,
     ]
     uuids = [str(uuid4()) for _ in range(len(documents))]
-
     vector_store.add_documents(documents=documents, ids=uuids)
 
 
@@ -408,6 +361,7 @@ def query_doc_demo():
                 source = doc.metadata['source']
                 sources.append(source)
 
+
 key_words_system_template = '''
 在以下文本中：
 {text}
@@ -453,9 +407,9 @@ def query_keywords_in_file(file_path, user_input=None, st=None):
     fetch_all = cur.fetchall()
     if fetch_all:
         for data in fetch_all:
-            split_keywords = re.split(',|，', data[2])
+            split_keywords = re.split('[,，]', data[2])
             for key_word in split_keywords:
-                if key_word in content:
+                if key_word and key_word in content:
                     seen_key_words.append(data)
     return seen_key_words
 
@@ -473,5 +427,8 @@ if __name__ == '__main__':
     model_name = 'qwen2.5:14b'
     # llm = create_langchain_ollama_llm(base_url=ollama_base_url, model=model_name)
     key_words = ['辅助生殖器械', '雾化设备']
-    seen_key_words = query_keywords_in_file('./test_files/第三批实施医疗器械唯一标识的产品目录.docx')
+    seen_key_words = query_keywords_in_file(
+        'static/pdf_and_doc/GJB150.7A-2009军用装备实验室环境试验方法+太阳辐射试验.docx',
+        user_input='军用装备实验室环境试验方法+高温试验'
+    )
     print(seen_key_words)

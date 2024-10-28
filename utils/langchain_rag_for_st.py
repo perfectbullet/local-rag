@@ -85,5 +85,4 @@ def langchain_chat_stream(q, st):
                         'name': os.path.basename(source_file),
                     }
                     sources.append(new_source)
-
     st.session_state["sources"] = sources

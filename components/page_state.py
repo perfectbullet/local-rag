@@ -48,7 +48,7 @@ def set_initial_state():
         st.session_state["last_chat_input"] = '请输入你要搜索的关键词'
 
     if "knowledge_base_list" not in st.session_state:
-        logger.info('init knowledge base')
+        # logger.info('init knowledge base')
         get_knowledge_base()
     if 'selected_knowledge_base' not in st.session_state:
         logger.info('selected_knowledge_base not in st.session_state')
