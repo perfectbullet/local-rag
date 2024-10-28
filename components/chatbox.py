@@ -20,7 +20,10 @@ def chatbox():
     # 设定不同的列标题和展示的内容
     with col1:
         with st.container(border=True):
-            if prompt := st.chat_input("请输入你要搜索的关键词"):
+
+            last_chat_input = st.session_state["last_chat_input"]
+            if prompt := st.chat_input(last_chat_input):
+                st.session_state["last_chat_input"] = prompt
                 # Prevent submission if Ollama endpoint is not set
                 logger.info('prompt is {}', prompt)
                 # Generate llama-index stream with user input
