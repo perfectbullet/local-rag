@@ -23,7 +23,7 @@ def read_excel(excel_file) -> Tuple[List, List]:
 
 
 def add_data_from_excel():
-    file_name = 'ddddddemo/alpaca_merge-医疗器械-产品详细v2-test.xlsx'
+    file_name = 'rag_document/alpaca_merge-医疗器械-产品详细v2-test.xlsx'
     headers, recovered_json = read_excel(file_name)
 
     vector_store = create_langchain_embedding_db()
