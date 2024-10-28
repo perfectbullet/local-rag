@@ -70,4 +70,3 @@ def set_page_config():
     """,
         unsafe_allow_html=True,
     )
-a
