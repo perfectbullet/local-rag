@@ -20,11 +20,13 @@ from langchain_ollama import OllamaEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from loguru import logger
 from langchain_core.prompts import PromptTemplate
+
+from config import BASE_VECTOR_DB_DIR
 from utils.read_dox2txt import read_file
 
 langchain.verbose = True
 
-BASE_VECTOR_DB_DIR = './vector_db'
+
 
 
 def timer(func):

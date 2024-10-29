@@ -4,6 +4,11 @@ from typing import Tuple, List
 import pandas as pd
 from langchain_core.documents import Document
 
+import sys
+
+from config import OLLAMA_BASE_URL
+
+sys.path.append('/home/appuser')
 from deal_excel_and_json import read_json
 
 try:
@@ -23,24 +28,75 @@ def read_excel(excel_file) -> Tuple[List, List]:
 
 
 def add_data_from_excel():
-    file_name = 'rag_document/alpaca_merge-医疗器械-产品详细v2-test.xlsx'
+    file_name = './excel_data/医疗器械-产品详细20241028.xlsx'
     headers, recovered_json = read_excel(file_name)
-
-    vector_store = create_langchain_embedding_db()
+    OLLAMA_BASE_URL = 'http://192.168.1.159:11434'
+    vector_store = create_langchain_embedding_db(
+        ollama_base_url=OLLAMA_BASE_URL,
+        embedding_model='znbang/bge:large-zh-v1.5-f32',
+        collection_name='alpaca_merge_medical_mechain'
+    )
 
     doc_list = []
     for data in recovered_json:
         doc = Document(
-            page_content=data['output'],
-            metadata={"source": "{}, row {}".format(file_name, data['instruction'])},
+            page_content=data['内容'],
+            metadata={"source": "{}, row {}".format(file_name, data['image_name'])},
         )
+        
         doc_list.append(doc)
+        print(doc)
+        break
     print('len of doc_list ', len(doc_list))
     # print('doc_list is {}'.format(doc_list[:3]))
-    ids = add_document(vector_store, doc_list)
+    # ids = add_document(vector_store, doc_list)
     # 正义堂祛红血丝护眼液OEM贴牌代工
     # 三申卧式圆形压力蒸汽灭菌器YX450W双温度显示和控制
-    for res, score in query_vector_store(vector_store, "护眼液OEM", ):
+    for res, score in query_vector_store(vector_store, "胃肠超声造影剂", ):
+        print(f"* [SIM={score:3f}] {res.page_content[:100]} [{res.metadata}]")
+
+
+def add_data_from_excel_v2():
+    file_name = './excel_data/爬虫数据-5条口罩.xls'
+    headers, recovered_json = read_excel(file_name)
+
+    vector_store = create_langchain_embedding_db(
+        ollama_base_url=OLLAMA_BASE_URL,
+        embedding_model='znbang/bge:large-zh-v1.5-f32',
+        collection_name='alpaca_merge_medical_mechain'
+    )
+    seen_urls = set()
+    doc_list = []
+    for data in recovered_json:
+        content = data['内容'].replace(' ', '')
+        metadata = {
+            'source': 'excel_data/医疗器械-产品详细20241028.xlsx',
+            'image_path': data.get('image_path', ''),
+            'name': data['name'],
+            'company': data['公司'],
+            'image_url': data['image_url'],
+            'content': content
+        }
+        seen_urls.add(data['标题链接'])
+
+        page_content = '产品名称: {}\n\n{}'.format(data['name'], content)
+        doc = Document(
+            page_content=page_content,
+            metadata=metadata,
+        )
+        
+        doc_list.append(doc)
+        # print(doc)
+        # break
+    step = 20
+    l = len(doc_list)
+    doc_list_slice = [doc_list[i:i + step] for i in range(0, l, step)]
+    for lslice in doc_list_slice:
+        ids = add_document(vector_store, lslice)
+        print(ids)
+    # 正义堂祛红血丝护眼液OEM贴牌代工
+    # 三申卧式圆形压力蒸汽灭菌器YX450W双温度显示和控制
+    for res, score in query_vector_store(vector_store, "口罩", ):
         print(f"* [SIM={score:3f}] {res.page_content[:100]} [{res.metadata}]")
 
 
@@ -91,5 +147,23 @@ def add_data_from_json():
         print(f"* [SIM={score:3f}]  [{res.metadata}]")
 
 
+
+def demo_query():
+
+    OLLAMA_BASE_URL = 'http://125.69.16.175:11434'
+    vector_store = create_langchain_embedding_db(
+        ollama_base_url=OLLAMA_BASE_URL,
+        embedding_model='znbang/bge:large-zh-v1.5-f32',
+        collection_name='alpaca_merge_medical_mechain'
+    )
+    
+    # 正义堂祛红血丝护眼液OEM贴牌代工
+    # 三申卧式圆形压力蒸汽灭菌器YX450W双温度显示和控制
+    for res, score in query_vector_store(vector_store, "一次性使用医用外科口罩", ):
+        print(f"* [SIM={score:3f}] {res.page_content[:100]} [{res.metadata}]")
+
+
 if __name__ == '__main__':
-    add_data_from_json()
+    # add_data_from_json()
+    add_data_from_excel_v2()
+    # demo_query()

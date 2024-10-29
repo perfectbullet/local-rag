@@ -16,3 +16,6 @@ elif getuser() == 'gx':
 else:
     STATIC_URL = 'http://192.168.1.159:8501/app/static/'
     OLLAMA_BASE_URL = 'http://192.168.1.159:11434'
+
+
+BASE_VECTOR_DB_DIR = 'vector_db'

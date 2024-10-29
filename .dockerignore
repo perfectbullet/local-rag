@@ -17,7 +17,7 @@ Dockerfile
 docker-compose*
 *.log
 .ipynb_checkpoints
-vector_db
+vector_db-bak
 embedding_models
-vector_db
+vector_db-bak
 wheel_packages.zip
