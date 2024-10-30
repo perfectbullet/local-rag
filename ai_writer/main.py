@@ -1,17 +1,12 @@
-import base64
-import re
-from collections import defaultdict
-
 import streamlit as st
-import streamlit.components.v1 as components
-from Markdown2docx import Markdown2docx
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_core.output_parsers import StrOutputParser
 from langchain_ollama import ChatOllama
 from loguru import logger
-# from streamlit_quill import st_quill
-from export import export
+
 from config import OLLAMA_BASE_URL
+from export import export
+from parse_markdown import parse_markdown
 
 print('OLLAMA_BASE_URL is ', OLLAMA_BASE_URL)
 llm = ChatOllama(
@@ -26,9 +21,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state='expanded',
 )
-
-
-
 
 
 # Function for generating llm response
@@ -107,11 +99,6 @@ def init_write(query, key_words, key_point, writing_requirements, structured_dat
     return all_outputs
 
 
-
-
-
-
-
 if "messages" not in st.session_state.keys():
     st.session_state.messages = []
 
@@ -177,14 +164,9 @@ def start_write():
                 display()
 
 
-
-
-
 def clear_chat_history():
     st.session_state.messages = []
     display()
-
-
 
 
 if "full_response" not in st.session_state:

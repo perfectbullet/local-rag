@@ -7,30 +7,38 @@ from show_table_data.show_excel import st_show_excel
 from utils.langchain_rag_for_st import langchain_chat_stream
 from utils.logs import logger
 from config import STATIC_URL
-
+from st_component_image_show.create_image_show import create_image_show
 
 def chat_document_rag(prompt: str, st) -> str:
     output_placeholder = st.empty()
     # add refer source
-    source_placeholder = st.empty()
+    source_header = st.empty()
+    source_header_placeholder = st.empty()
     # Add assistant response to chat history
     stream = langchain_chat_stream(prompt, st)
     response = ""
     for token in stream:
         response += token
-        # print(chunk.choices[0].delta.content, end="")
         output_placeholder.markdown(response)
-    source_txt = "### 参考文档如下："
-    html_source = '''<h3>参考文档如下：</h3>'''
+        
+    # 参考文献标题
+    html_source_header = '''<h3>参考文档如下：</h3>'''
+    
+    # 参考文献正文
+    source_placeholder = st.empty()
+    
+    source_header_placeholder.html(html_source_header)
     seen_file_names = set()
+
+    # 参考文献正文
+    html_source = ''
+    image_items = []
     for sc in st.session_state["sources"]:
         logger.info('sc is {}', sc)
         image_path = sc.get('image_path', '')
         if image_path:
-            image_markdown_url = '![{}]({}{})' \
-                .format(os.path.basename(image_path), STATIC_URL, image_path)
-            source_txt += '\n\n**{}**\n\n{}'.format(sc['name'], image_markdown_url)
-            source_placeholder.markdown(source_txt)
+            image_url = '{}{}'.format(STATIC_URL, image_path)
+            image_items.append({'url': image_url, 'imagename': sc['name']})
         else:
             file_name = sc['name']
             if file_name in seen_file_names:
@@ -43,7 +51,7 @@ def chat_document_rag(prompt: str, st) -> str:
             source_placeholder.html(html_source)
 
             # show item images
-            item_images_placeholder = st.empty()
+            # item_images_placeholder = st.empty()
             file_path = os.path.join('./static/pdf_and_doc/', file_name)
             seen_key_words = query_keywords_in_file(
                 file_path,
@@ -51,12 +59,15 @@ def chat_document_rag(prompt: str, st) -> str:
                 st=st
             )
             logger.info('seen_key_words is {}', seen_key_words)
-            item_image_urls_markdown = ''
+            # item_image_urls_markdown = ''
             for keyword in seen_key_words:
-                item_image_url = '![{}]({}{})'.format(keyword[2], STATIC_URL, keyword[0])
-                logger.info(item_image_url)
-                item_image_urls_markdown += '\n\n**{}**\n\n{}'.format(keyword[2], item_image_url)
-            item_images_placeholder.markdown(item_image_urls_markdown)
+                # item_image_url = '![{}]({}{})'.format(keyword[2], STATIC_URL, keyword[0])
+                # logger.info(item_image_url)
+                # item_image_urls_markdown += '\n\n**{}**\n\n{}'.format(keyword[2], item_image_url)
+                image_url = '{}{}'.format(STATIC_URL, keyword[0])
+                image_items.append({'url': image_url, 'imagename': keyword[2]})
+            # item_images_placeholder.markdown(item_image_urls_markdown)
+    create_image_show(image_items, st)
 
 
 def chatbox():
@@ -72,8 +83,8 @@ def chatbox():
     with col1:
         with st.container(border=True):
 
-            last_chat_input = st.session_state["last_chat_input"]
-            if prompt := st.chat_input(last_chat_input):
+            # last_chat_input = st.session_state["last_chat_input"]
+            if prompt := st.chat_input('请输入关键词'):
                 st.session_state["last_chat_input"] = prompt
                 # Prevent submission if Ollama endpoint is not set
                 logger.info('prompt is {}', prompt)
@@ -82,7 +93,7 @@ def chatbox():
                     with st.container(border=True):
                         with st.chat_message("assistant"):
                             with st.spinner("回答中..."):
-                                response = st_show_excel(prompt,'./医疗器械-产品详细1024整理.xlsx', st)
+                                response = st_show_excel(prompt,'./excel_data/数据综合管理20241022.xlsx', st)
                 else:
                     with st.container(border=True):
                         with st.chat_message("assistant"):

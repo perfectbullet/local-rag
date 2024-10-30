@@ -39,7 +39,6 @@ def download_button(object_to_download, download_filename):
 
 def export(st):
     # 获取 Quill 编辑器中的文本
-    # edited_text = st.session_state.get("quill", "")
     latest_message = st.session_state.full_response
     logger.info('latest_message is {}'.format(latest_message))
     # 创建一个新的 Word 文档

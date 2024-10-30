@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh" >
+<head>
+  <meta charset="UTF-8">
+  <title>图片预览</title>
+  <script>{{ js_content }}</script>
+
+  <style>{{ style_content }}</style>
+</head>
+<body>
+<div class="introcontainer">
+  <div class="close">X</div>
+  <!-- Slider main container -->
+  <div class="swiper-container">
+    <!-- Additional required wrapper -->
+    <div class="swiper-wrapper">
+      {% for item in items %}
+        <div class="swiper-slide">
+          <div class="cards">
+            <div class="card ong">
+              <img src="{{ item.url }}"/>
+              <div class="text"></div>
+              <div class="title-box">
+                <h1>{{ item.imagename }}</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <!-- If we need pagination -->
+    <div class="swiper-pagination"></div>
+
+    <!-- If we need navigation buttons -->
+     <div class="swiper-arrows">
+    <div class="swiper-button-prev"><span></span></div>
+    <div class="swiper-button-next"><span></span></div>
+  </div>
+
+    <!-- If we need scrollbar -->
+  </div>
+</div>
+<script>
+
+ const swiper = new Swiper('.swiper-container', {
+  speed: 500,
+  pagination: {
+    el: '.swiper-pagination',
+    clickable: true,
+  },
+  centeredSlides: true,
+  paginationClickable: true,
+  watchSlidesProgress: true,
+  loop: true,
+  slidesPerView: 2,
+  spaceBetween: 30,
+  navigation: {
+    nextEl: '.swiper-button-next',
+    prevEl: '.swiper-button-prev',
+  },
+});
+</script>
+<!-- partial -->
+  
+</body>
+</html>
