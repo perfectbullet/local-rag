@@ -10,7 +10,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_ollama import ChatOllama
 from loguru import logger
 # from streamlit_quill import st_quill
-
+from export import export
 from config import OLLAMA_BASE_URL
 
 print('OLLAMA_BASE_URL is ', OLLAMA_BASE_URL)
@@ -28,51 +28,7 @@ st.set_page_config(
 )
 
 
-def parse_markdown(md_filepath):
-    markdown_text = ''
-    with open(md_filepath, 'r', encoding='utf8') as f:
-        for l in f.readlines():
-            markdown_text += l
-    # 结构化数据存储
-    structured_data = defaultdict(lambda: defaultdict(str))
 
-    # 正则表达式匹配标题
-    h1_pattern = re.compile(r'^## (.+)', re.MULTILINE)
-    h2_pattern = re.compile(r'^### (.+)', re.MULTILINE)
-
-    # 查找所有一级标题
-    h1_matches = list(h1_pattern.finditer(markdown_text))
-
-    for i, h1_match in enumerate(h1_matches):
-        h1_title = h1_match.group(1).strip()
-        h1_start = h1_match.end()
-        h1_end = h1_matches[i + 1].start() if i + 1 < len(h1_matches) else len(markdown_text)
-
-        # 获取一级标题下的内容
-        h1_content = markdown_text[h1_start:h1_end]
-
-        # 查找所有二级标题
-        h2_matches = list(h2_pattern.finditer(h1_content))
-
-        if not h2_matches:
-            # 如果没有二级标题，直接存储一级标题的内容
-            structured_data[h1_title] = h1_content.strip()
-        else:
-            for j, h2_match in enumerate(h2_matches):
-                h2_title = h2_match.group(1).strip()
-                h2_start = h2_match.end()
-                h2_end = h2_matches[j + 1].start() if j + 1 < len(h2_matches) else len(h1_content)
-
-                # 获取二级标题下的内容
-                h2_content = h1_content[h2_start:h2_end].strip()
-
-                # 去除二级标题本身的行
-                h2_content = re.sub(r'^## .+', '', h2_content, flags=re.MULTILINE).strip()
-
-                # 存储二级标题及其内容
-                structured_data[h1_title][h2_title] = h2_content
-    logger.info('structured_data is {}', structured_data)
-    return structured_data
 
 
 # Function for generating llm response
@@ -151,54 +107,9 @@ def init_write(query, key_words, key_point, writing_requirements, structured_dat
     return all_outputs
 
 
-def rewrite_polish(selected_text, polish_requirements):
-    system = """## 角色描述：你是一名项目写作专家，擅长对项目申请书中的文字进行润色。
-## 工作流程
-第一步：在开始润色之前，必须认真阅读并牢记润色的要求。
-第二步：使用Markdown格式，按照润色的要求，对给你的文字进行润色。
-    """
-    user = f"""
-原文字如下:
-{selected_text}
-润色要求如下:
-{polish_requirements}
-    """
-
-    messages = [
-        SystemMessage(content=system),
-        HumanMessage(content=user),
-    ]
-
-    parser = StrOutputParser()
-
-    chain = llm | parser
-    stream_res = chain.stream(messages)
-    # all_outputs.append(stream_res)
-    return stream_res
 
 
-def rewrite_expand(selected_text, polish_requirements):
-    system = """## 角色描述：你是一名项目写作专家，擅长对项目申请书中的文字进行扩写。
-## 工作流程
-第一步：在开始扩写之前，必须认真阅读并牢记扩写的要点。
-第二步：使用Markdown格式，按照扩写的要求，对给你的文字进行扩写。"""
-    user = f"""
-原文字如下:
-{selected_text}
-扩写的要点如下:
-{polish_requirements}"""
 
-    messages = [
-        SystemMessage(content=system),
-        HumanMessage(content=user),
-    ]
-
-    parser = StrOutputParser()
-
-    chain = llm | parser
-    stream_res = chain.stream(messages)
-
-    return stream_res
 
 
 if "messages" not in st.session_state.keys():
@@ -266,77 +177,7 @@ def start_write():
                 display()
 
 
-def polish():
-    display()
-    polish_requirements = st.session_state.polish_requirements
-    selected_text = st.session_state.polish_target_content
-    try:
-        with st.chat_message("user"):
-            st.session_state.messages.append(
-                {"role": "user",
-                 "content": f"针对\n```text\n{selected_text}\n```\n进行润色，要求:{polish_requirements}"})
-            st.write(f"针对\n```text\n{selected_text}\n```\n进行润色，要求:{polish_requirements}")
-        with st.chat_message("assistant"):
-            with st.spinner("Thinking..."):
-                st_all_columns = st.columns(3)
-                for draft_id in range(3):
-                    column_subheader = f"草稿{draft_id + 1}:"
-                    st_all_columns[draft_id].subheader(column_subheader)
 
-                polish_result = rewrite_polish(selected_text, polish_requirements)
-                polish_placeholder = [st_all_columns[0].empty(), st_all_columns[1].empty(), st_all_columns[2].empty()]
-                polish_full_text = ['', '', '']
-                choice_index = 0
-                for chunk in polish_result:
-                    chunk = chunk.choices
-                    if chunk and chunk[0].delta.content is not None:
-                        polish_full_text[choice_index % 3] += chunk[0].delta.content
-                        polish_placeholder[0].markdown(polish_full_text[0], unsafe_allow_html=True)
-                        polish_placeholder[1].markdown(polish_full_text[1], unsafe_allow_html=True)
-                        polish_placeholder[2].markdown(polish_full_text[2], unsafe_allow_html=True)
-                    choice_index += 1
-        # message = {"role": "assistant", "content": polish_full_text[0]}
-        st.session_state.messages.append({"role": "assistant", "content": '草稿1：\n' + polish_full_text[0]})
-        st.session_state.messages.append({"role": "assistant", "content": '草稿2：\n' + polish_full_text[1]})
-        st.session_state.messages.append({"role": "assistant", "content": '草稿3：\n' + polish_full_text[2]})
-    except AttributeError:
-        st.error("polish run error")
-
-
-def expand():
-    display()
-    expand_requirements = st.session_state.expand_requirements
-    selected_text = st.session_state.expand_target_content
-    try:
-        with st.chat_message("user"):
-            st.session_state.messages.append(
-                {"role": "user",
-                 "content": f"针对\n```text\n{selected_text}\n```\n进行扩写，要求:{expand_requirements}"})
-            st.write(f"针对\n```text\n{selected_text}\n```\n进行扩写，要求:{expand_requirements}")
-        with st.chat_message("assistant"):
-            with st.spinner("Thinking..."):
-                st_all_columns = st.columns(3)
-                for draft_id in range(3):
-                    column_subheader = f"草稿{draft_id + 1}:"
-                    st_all_columns[draft_id].subheader(column_subheader)
-
-                polish_result = rewrite_expand(selected_text, expand_requirements)
-                polish_placeholder = [st_all_columns[0].empty(), st_all_columns[1].empty(), st_all_columns[2].empty()]
-                polish_full_text = ['', '', '']
-                choice_index = 0
-                for chunk in polish_result:
-                    chunk = chunk.choices
-                    if chunk and chunk[0].delta.content is not None:
-                        polish_full_text[choice_index % 3] += chunk[0].delta.content
-                        polish_placeholder[0].markdown(polish_full_text[0], unsafe_allow_html=True)
-                        polish_placeholder[1].markdown(polish_full_text[1], unsafe_allow_html=True)
-                        polish_placeholder[2].markdown(polish_full_text[2], unsafe_allow_html=True)
-                    choice_index += 1
-        st.session_state.messages.append({"role": "assistant", "content": '草稿1：\n' + polish_full_text[0]})
-        st.session_state.messages.append({"role": "assistant", "content": '草稿2：\n' + polish_full_text[1]})
-        st.session_state.messages.append({"role": "assistant", "content": '草稿3：\n' + polish_full_text[2]})
-    except AttributeError:
-        st.error("expand run error")
 
 
 def clear_chat_history():
@@ -344,58 +185,6 @@ def clear_chat_history():
     display()
 
 
-def download_button(object_to_download, download_filename):
-    """
-    Generates a link to download the given object_to_download.
-    Params:
-    ------
-    object_to_download:  The object to be downloaded.
-    download_filename (str): filename and extension of file. e.g. mydata.csv,
-    Returns:
-    -------
-    (str): the anchor tag to download object_to_download
-    """
-    logger.info('start to download')
-    b64 = base64.b64encode(object_to_download.read()).decode()
-    mime_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-
-    with open('./static/jquery-3.2.1.min.js', 'rt') as f:
-        js = f.read()
-        # <script src="http://code.jquery.com/jquery-3.2.1.min.js"></script>
-        dl_link = f"""
-        <html>
-        <head>
-        <title>Start Auto Download file</title>
-        <script>{js}</script>
-        <script>
-        $('<a href="data:{mime_type};base64,{b64}" download="{download_filename}">')[0].click()
-        </script>
-        </head>
-        </html>
-        """
-        print(dl_link)
-        return dl_link
-
-
-def export():
-    # 获取 Quill 编辑器中的文本
-    # edited_text = st.session_state.get("quill", "")
-    latest_message = st.session_state.full_response
-    logger.info('latest_message is {}'.format(latest_message))
-    # 创建一个新的 Word 文档
-    with open('tmp1215.md', 'wt', encoding='utf8') as f:
-        f.write(latest_message)
-
-    project = Markdown2docx('tmp1215')
-    project.eat_soup()
-    project.save()
-
-    with open('tmp1215.docx') as f:
-        components.html(
-            download_button(f.buffer, 'outputv2.docx'),
-            height=0,
-        )
-    display()
 
 
 if "full_response" not in st.session_state:
@@ -424,17 +213,6 @@ if "stop_generate" not in st.session_state:
     st.session_state.stop_generate = False
 
 
-def export_to_buffer():
-    latest_message = st.session_state.full_response
-    logger.info('latest_message is {}'.format(latest_message))
-    project = Markdown2docx('tmp1215')
-    project.eat_soup()
-    project.save()
-    logger.info('export_to_buffer tmp1215 is done')
-    with open('tmp1215.docx', mode='rb') as f:
-        return f.read()
-
-
 def stop_generate():
     st.session_state.stop_generate = True
     display()
@@ -459,7 +237,8 @@ with st.sidebar:
     with col_v2:
         st.button('**停止**', on_click=stop_generate)
     with col_v3:
-        st.button('**导出**', on_click=export)
+        if st.button('**导出**', on_click=export):
+            display()
 
     # 修改页面布局
     st.markdown(

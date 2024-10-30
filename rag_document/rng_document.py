@@ -280,6 +280,45 @@ def rag_chat_stream(
         yield answer
 
 
+def rag_chat_stream(
+        query: str,
+        vector_store: Chroma,
+        llm: ChatOllama
+):
+    """
+    Args:
+        input:
+        vector_store:
+        llm:
+    Returns:
+    """
+    retriever = vector_store.as_retriever()
+    system_prompt = (
+        "你是一个负责文档分析专家。"
+        "使用以下检索到的上下文来回答问题。"
+        "如果你不知道答案，就说你不知道。"
+        "你不能编造和上下文不符合的内容。"
+        "\n\n"
+        "{context}"
+    )
+    prompt = ChatPromptTemplate.from_messages(
+        [
+            ("system", system_prompt),
+            ("human", "{input}"),
+        ]
+    )
+    question_answer_chain = create_stuff_documents_chain(llm, prompt)
+    rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+    class CustomHandler(BaseCallbackHandler):
+        def on_llm_start(
+                self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any
+        ) -> Any:
+            formatted_prompts = "\n".join(prompts)
+            # logger.info(f"Prompt:\n{formatted_prompts}")
+    for answer in rag_chain.stream({"input": query}, config={"callbacks": [CustomHandler()]}):
+        yield answer
+
+
 def create_langchain_embedding_db(
         ollama_base_url=None,
         embedding_model=None,
