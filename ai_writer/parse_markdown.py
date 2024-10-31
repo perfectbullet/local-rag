@@ -47,5 +47,5 @@ def parse_markdown(md_filepath):
 
                 # 存储二级标题及其内容
                 structured_data[h1_title][h2_title] = h2_content
-    logger.info('structured_data is {}', structured_data)
+    # logger.info('structured_data is {}', structured_data)
     return structured_data

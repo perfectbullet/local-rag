@@ -23,13 +23,14 @@ def initial_state(st):
         st.session_state.expand_target_content = ""
     if "expand_requirements" not in st.session_state:
         st.session_state.expand_requirements = ""
-    if "stop_generate" not in st.session_state:
-        st.session_state.stop_generate = False
 
+    # button state
     if "start_write" not in st.session_state:
         st.session_state.start_write = False
     if "stop_generate" not in st.session_state:
-        st.session_state.stop_generate = True
+        st.session_state.stop_generate = False
+    if "start_export" not in st.session_state:
+        st.session_state.start_export = False
 
     st.set_page_config(
         page_title="文案创作",
@@ -37,4 +38,3 @@ def initial_state(st):
         layout="wide",
         initial_sidebar_state='expanded',
     )
-

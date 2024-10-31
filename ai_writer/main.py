@@ -94,7 +94,7 @@ def init_write(query, key_words, key_point, writing_requirements, structured_dat
     return all_outputs
 
 
-def display():
+def display(st):
     logger.info('display')
     with st.container(border=True):
         with st.container(border=True):
@@ -108,10 +108,7 @@ def display():
                     st.write(st.session_state.full_response)
 
 
-def start_write():
-    if not st.session_state.start_write:
-        stop_generate()
-        return
+def start_write(st):
     with st.container(border=True):
         with st.container(border=True):
             query = st.session_state.query
@@ -119,7 +116,7 @@ def start_write():
             key_words = st.session_state.key_words
             writing_requirements = st.session_state.writing_requirements
             structured_data = parse_markdown('docx_to_md.md')
-            st.markdown('''###### 🗨写作大纲和要求''')
+            st.markdown('''###### ✏️写作大纲和要求''')
             with st.container(border=True):
                 st.session_state.messages.append(
                     {"role": "user",
@@ -154,24 +151,23 @@ def start_write():
                 message = {"role": "assistant", "content": full_response}
                 print('full_response is {}'.format(full_response))
                 st.session_state.messages.append(message)
-                display()
+                # display()
 
 
-def clear_chat_history():
-    st.session_state.messages = []
-    display()
+# def clear_chat_history():
+#     st.session_state.messages = []
+#     display()
 
 
-def stop_generate():
-    # st.session_state.stop_generate = True
-    display()
+def stop_generate(st):
+    logger.info('stop generate')
+    display(st)
 
 def init_sdebar(st):
     with st.sidebar:
         with st.container(border=True):
             query_params = st.query_params
             print('query_params is {}'.format(query_params))
-            st.markdown('#### 文案创作')
             # with st.expander("⚙️写作设置", expanded=True):
             #     with st.form(key='writing_form'):
             # use_ai_search = st.checkbox('是否使用AI搜索', value=False, available=False)
@@ -190,15 +186,32 @@ def init_sdebar(st):
             with col_v1:
                 if st.button('**生成**'):
                     st.session_state.start_write = True
+                    st.session_state.stop_generate = False
+                    st.session_state.start_export = False
 
             with col_v2:
                 if st.button('**停止**'):
+                    st.session_state.stop_generate = True
                     st.session_state.start_write = False
+                    st.session_state.start_export = False
 
             with col_v3:
-                if st.button('**导出**', on_click=export):
-                    display()
+                if st.button('**导出**'):
+                    st.session_state.start_export = True
+                    st.session_state.start_write = False
+                    st.session_state.stop_generate = False
+
+
+def start_three(st):
+    if st.session_state.start_write:
+        start_write(st)
+    if st.session_state.stop_generate:
+        stop_generate(st)
+    if st.session_state.start_export:
+        export(st)
+        stop_generate(st)
 
 initial_state(st)
 init_sdebar(st)
-start_write()
+
+start_three(st)
