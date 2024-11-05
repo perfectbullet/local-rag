@@ -8,3 +8,4 @@ data/*
 /.idea/
 /embedding_models/
 /rag_document/vector_db/
+demo_exp_report.doc
