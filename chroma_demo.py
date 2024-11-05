@@ -26,7 +26,7 @@ logger.info('current system user is {}', getuser())
 
 if getuser() == 'zj':
     STATIC_URL = 'http://127.0.0.1:8501/app/static/'
-    OLLAMA_BASE_URL = 'http://125.69.16.175:11434'
+    OLLAMA_BASE_URL = 'http://127.0.0.1:11434'
     PROJECT_DIR = '~/local-rag'
 elif getuser() == 'ubuntu':
     STATIC_URL = 'http://125.69.16.175:8501/app/static/'
@@ -34,11 +34,11 @@ elif getuser() == 'ubuntu':
 elif getuser() == 'gx':
     STATIC_URL = 'http://127.0.0.1:8501/app/static/'
     OLLAMA_BASE_URL = 'http://125.69.16.175:11434'
-    embedding_model='znbang/bge:large-zh-v1.5-f32'
 else:
     STATIC_URL = 'http://192.168.1.159:8501/app/static/'
     OLLAMA_BASE_URL = 'http://192.168.1.159:11434'
 # collection_name = 'laws_and_regulations'
+embedding_model='znbang/bge:large-zh-v1.5-f32'
 
 print('OLLAMA_BASE_URL is {}'.format(OLLAMA_BASE_URL))
 
@@ -76,13 +76,13 @@ prompt = ChatPromptTemplate.from_messages(
 )
 
 
-# question_answer_chain = create_stuff_documents_chain(llm, prompt)
-# rag_chain = create_retrieval_chain(retriever, question_answer_chain)
-# results = rag_chain.invoke({"input": "一次性使用医用外科口罩"})
-#
-# for res in results['context']:
-#     print(f"* {res.page_content} [{res.metadata}]")
-#     print(f"* [{res.metadata}]")
+question_answer_chain = create_stuff_documents_chain(llm, prompt)
+rag_chain = create_retrieval_chain(retriever, question_answer_chain)
+results = rag_chain.invoke({"input": "一次性使用医用外科口罩"})
+
+for res in results['context']:
+    print(f"* {res.page_content} [{res.metadata}]")
+    print(f"* [{res.metadata}]")
     # [{'filetype': 'docx', 'source': './static/pdf_and_doc/2024年医疗器械行业标准制修订计划项目.docx'}]
     #     [{'source': '{"image_path": "", "name": "经颅多普勒在线查看检测报告", "company": "南京科进有限公司", "image_url": ""}'}]
 
@@ -91,16 +91,16 @@ prompt = ChatPromptTemplate.from_messages(
 
 
 # ############################################## 相似度查询
-results = vector_store.similarity_search_with_score(
-    "正义堂祛红血丝护眼液",
-    k=4,
-    # filter={"source": 'image_path'}
-    # filter={'source': '{"image_path": "", "name": "经颅多普勒在线查看检测报告", "company": "南京科进有限公司", "image_url": ""}'},
-)
-for res in results:
-    res[0].metadata['content'] = ''
-    res[0].metadata['image_url'] = ''
-    print(f"* {res[1]} {res[0].page_content} [{res[0].metadata}]")
+# results = vector_store.similarity_search_with_score(
+#     "正义堂祛红血丝护眼液",
+#     k=4,
+#     # filter={"source": 'image_path'}
+#     # filter={'source': '{"image_path": "", "name": "经颅多普勒在线查看检测报告", "company": "南京科进有限公司", "image_url": ""}'},
+# )
+# for res in results:
+#     res[0].metadata['content'] = ''
+#     res[0].metadata['image_url'] = ''
+#     print(f"* {res[1]} {res[0].page_content} [{res[0].metadata}]")
     # print(f"* [{res.metadata}]")
     # [{'filetype': 'docx', 'source': './static/pdf_and_doc/2024年医疗器械行业标准制修订计划项目.docx'}]
     #     [{'source': '{"image_path": "", "name": "经颅多普勒在线查看检测报告", "company": "南京科进有限公司", "image_url": ""}'}]
