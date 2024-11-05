@@ -17,3 +17,4 @@ data/*
 .ipynb_checkpoints
 /learn_langchain/split_pdf/tmp_pdf/
 /learn_langchain/tesseract-ocr/
+demo_exp_report.doc
