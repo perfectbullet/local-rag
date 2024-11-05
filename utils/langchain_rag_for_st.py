@@ -73,7 +73,7 @@ def langchain_chat_stream(q, st):
                 if not doc.metadata.get('filetype'):
                     # 没有文件类型
                     # source = doc.metadata['source']
-                    print('doc.metadata is {}'.format(doc.metadata))
+                    logger.info('doc.metadata is {}'.format(doc.metadata))
                     sources.append(doc.metadata)
                 else:
                     source_file = doc.metadata['source']

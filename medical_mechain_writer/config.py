@@ -18,4 +18,5 @@ else:
     OLLAMA_BASE_URL = 'http://192.168.1.159:11434'
 
 
-BASE_VECTOR_DB_DIR = 'vector_db'
+# BASE_VECTOR_DB_DIR = 'vector_db'
+BASE_VECTOR_DB_DIR = 'vector_db202411011216'

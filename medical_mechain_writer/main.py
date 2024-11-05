@@ -135,7 +135,6 @@ def start_write(st):
                 full_response = ''
                 placeholder.markdown(full_response)
                 for output_stream in response:
-
                     if st.session_state.stop_generate:
                         placeholder.markdown(full_response)
                         break

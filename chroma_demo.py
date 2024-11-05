@@ -38,7 +38,7 @@ elif getuser() == 'gx':
 else:
     STATIC_URL = 'http://192.168.1.159:8501/app/static/'
     OLLAMA_BASE_URL = 'http://192.168.1.159:11434'
-collection_name = 'alpaca_merge_medical_mechain'
+# collection_name = 'laws_and_regulations'
 
 print('OLLAMA_BASE_URL is {}'.format(OLLAMA_BASE_URL))
 
@@ -49,9 +49,9 @@ llm = create_langchain_ollama_llm(
     base_url=OLLAMA_BASE_URL,
 )
 
-persist_directory = os.path.join(BASE_VECTOR_DB_DIR, 'alpaca_merge_medical_mechain')
+persist_directory = os.path.join('vector_db', 'alpaca_merge_medical_mechain')
 vector_store = Chroma(
-    collection_name=collection_name,
+    collection_name='alpaca_merge_medical_mechain',
     embedding_function=ollama_embeddings,
     persist_directory=persist_directory,  # Where to save data locally, remove if not necessary
 )
@@ -91,17 +91,19 @@ prompt = ChatPromptTemplate.from_messages(
 
 
 # ############################################## 相似度查询
-# results = vector_store.similarity_search_with_score(
-#     "口罩",
-#     k=4,
-#     # filter={"source": 'image_path'}
-#     # filter={'source': '{"image_path": "", "name": "经颅多普勒在线查看检测报告", "company": "南京科进有限公司", "image_url": ""}'},
-# )
-# for res in results:
-#     print(f"* {res[1]} {res[0].page_content} [{res[0].metadata}]")
-#     # print(f"* [{res.metadata}]")
-#     # [{'filetype': 'docx', 'source': './static/pdf_and_doc/2024年医疗器械行业标准制修订计划项目.docx'}]
-#     #     [{'source': '{"image_path": "", "name": "经颅多普勒在线查看检测报告", "company": "南京科进有限公司", "image_url": ""}'}]
+results = vector_store.similarity_search_with_score(
+    "正义堂祛红血丝护眼液",
+    k=4,
+    # filter={"source": 'image_path'}
+    # filter={'source': '{"image_path": "", "name": "经颅多普勒在线查看检测报告", "company": "南京科进有限公司", "image_url": ""}'},
+)
+for res in results:
+    res[0].metadata['content'] = ''
+    res[0].metadata['image_url'] = ''
+    print(f"* {res[1]} {res[0].page_content} [{res[0].metadata}]")
+    # print(f"* [{res.metadata}]")
+    # [{'filetype': 'docx', 'source': './static/pdf_and_doc/2024年医疗器械行业标准制修订计划项目.docx'}]
+    #     [{'source': '{"image_path": "", "name": "经颅多普勒在线查看检测报告", "company": "南京科进有限公司", "image_url": ""}'}]
 
 
 
@@ -224,30 +226,30 @@ def rag_chat_stream(
 
     # ########################################################  compression_retriever
     # 处理掉不相干的
-    compressor = LLMChainExtractor.from_llm(llm)
-    compression_retriever = ContextualCompressionRetriever(
-        base_compressor=compressor, base_retriever=retriever
-    )
-    # 测试召回的文档
-    # compressed_docs = compression_retriever.invoke(query)
-    # manul_context = '\n\n'.join([doc.metadata['content'] for doc in compressed_docs])
-
-    question_answer_chain = create_stuff_documents_chain(llm, prompt)
-    rag_chain = create_retrieval_chain(compression_retriever, question_answer_chain)
-
-    # new retrieval
-    # manul_rag_chain = prompt | llm | StrOutputParser()
+    # compressor = LLMChainExtractor.from_llm(llm)
+    # compression_retriever = ContextualCompressionRetriever(
+    #     base_compressor=compressor, base_retriever=retriever
+    # )
+    # # 测试召回的文档
+    # # compressed_docs = compression_retriever.invoke(query)
+    # # manul_context = '\n\n'.join([doc.metadata['content'] for doc in compressed_docs])
     #
-    class CustomHandler(BaseCallbackHandler):
-        def on_llm_start(
-                self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any
-        ) -> Any:
-            formatted_prompts = "\n".join(prompts)
-            # logger.info(f"Prompt:\n{formatted_prompts}")
-    # result = rag_chain.invoke({"input": query}, config={"callbacks": [CustomHandler()]})
-    # print(result)
-    for answer in rag_chain.stream({"input": query}, config={"callbacks": [CustomHandler()]}):
-        yield answer
+    # question_answer_chain = create_stuff_documents_chain(llm, prompt)
+    # rag_chain = create_retrieval_chain(compression_retriever, question_answer_chain)
+    #
+    # # new retrieval
+    # # manul_rag_chain = prompt | llm | StrOutputParser()
+    # #
+    # class CustomHandler(BaseCallbackHandler):
+    #     def on_llm_start(
+    #             self, serialized: Dict[str, Any], prompts: List[str], **kwargs: Any
+    #     ) -> Any:
+    #         formatted_prompts = "\n".join(prompts)
+    #         # logger.info(f"Prompt:\n{formatted_prompts}")
+    # # result = rag_chain.invoke({"input": query}, config={"callbacks": [CustomHandler()]})
+    # # print(result)
+    # for answer in rag_chain.stream({"input": query}, config={"callbacks": [CustomHandler()]}):
+    #     yield answer
 
 
     # def format_docs(docs):
@@ -266,5 +268,5 @@ def rag_chat_stream(
 
 if __name__ == '__main__':
     query = '口罩 '
-    for trunk in rag_chat_stream(query, vector_store, llm):
-        print(trunk)
+    # for trunk in rag_chat_stream(query, vector_store, llm):
+    #     print(trunk)
