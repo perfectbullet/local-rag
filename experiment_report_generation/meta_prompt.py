@@ -5,10 +5,17 @@ https://platform.openai.com/docs/guides/prompt-generation?context=text-out
 
 
 from openai import OpenAI
+from langchain_ollama import ChatOllama
+import os
+# use proxy
+os.environ["https_proxy"] = 'http://127.0.0.1:7897'
+os.environ["http_proxy"] = 'http://127.0.0.1:7897'
+os.environ["all_proxy"] = 'socks5://127.0.0.1:7897'
 
-
+# model = OllamaLLM(model="qwen2.5:14b", base_url='http://125.69.16.175:11434')
 client = OpenAI(
-    base_url='http://125.69.16.175:11434/v1',
+    base_url='http://localhost:11434/v1',
+    # model="qwen2.5:14b",
     api_key='ollama',  # required, but unused
 )
 
@@ -78,14 +85,7 @@ def generate_prompt(task_or_prompt: str):
 
 
 if __name__ == '__main__':
-
-    response = client.chat.completions.create(
-        model="llama3:8b",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": "Who won the world series in 2020?"},
-            {"role": "assistant", "content": "The LA Dodgers won in 2020."},
-            {"role": "user", "content": "Where was it played?"}
-        ]
-    )
-    print(response.choices[0].message.content)
+    usr_prompt = '''
+    '''
+    result = generate_prompt('')
+    # print(response.choices[0].message.content)
