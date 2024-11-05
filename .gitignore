@@ -8,3 +8,12 @@ data/*
 /.idea/
 /embedding_models/
 /rag_document/vector_db/
+/learn_langchain/data_test/
+/learn_langchain/chroma_langchain_db/
+/learn_langchain/chroma_langchain_db2/
+/learn_langchain/nltk_data/
+/learn_langchain/pdf_files/
+/learn_langchain/yolox_download/unstructuredio/
+.ipynb_checkpoints
+/learn_langchain/split_pdf/tmp_pdf/
+/learn_langchain/tesseract-ocr/
