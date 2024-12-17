@@ -82,7 +82,6 @@ def chatbox():
     # 设定不同的列标题和展示的内容
     with col1:
         with st.container(border=True):
-
             # last_chat_input = st.session_state["last_chat_input"]
             if prompt := st.chat_input('请输入关键词'):
                 st.session_state["last_chat_input"] = prompt
