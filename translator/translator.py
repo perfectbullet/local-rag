@@ -1,24 +1,8 @@
 import os
 import sys
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_ollama.llms import OllamaLLM
-from sympy.physics.units import temperature
+from langchain_models.ollama_models import model
 
-os.environ["HTTP_PROXY"] = ''
-os.environ["HTTPS_PROXY"] = ''
-os.environ["all_proxy"] = ''
-os.environ["ALL_PROXY"] = ''
-
-username = os.environ.get('USERNAME')
-sys_name = sys.platform
-print(username, sys_name)
-
-if sys_name == 'win32' and username == 'gx':
-    model = OllamaLLM(
-        model="qwen2.5:14b",
-        base_url='http://127.0.0.1:11434',
-        temperature=0.1
-    )
 
 
 sys_prompt = """现在你是一个军事领域的英汉翻译器，把给定文本翻译成中文。
@@ -49,8 +33,8 @@ for root, dirs,  files in os.walk('D:\zj_work\兵棋推演DB\Descriptions'):
             print(f'skip {name}')
             continue
         print(f'deal {name}')
-        with open(os.path.join(root, name), 'rt', encoding='utf8') as f:
-            content = f.read()
+        with open(os.path.join(root, name), 'rb') as f:
+            content = f.read().decode(encoding='UTF-8', errors='ignore')
             prompt = ChatPromptTemplate.from_messages([
                 ('system', sys_prompt),
                 ('user', '{content}')
