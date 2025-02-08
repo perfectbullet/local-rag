@@ -9,7 +9,7 @@ client = OpenAI(
 )
 
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-3.5-turbo"
+    st.session_state["openai_model"] = "moonshot-v1-8k"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []

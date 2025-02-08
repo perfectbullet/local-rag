@@ -1,8 +1,6 @@
 import re
 from collections import defaultdict
 
-from loguru import logger
-
 
 def parse_markdown(md_filepath):
     markdown_text = ''
